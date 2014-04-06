@@ -15,8 +15,23 @@ extern "C"
 #include <memory>
 #include <functional>
 
-
 typedef std::unique_ptr<AVFrame, std::function<void(AVFrame *)>> AVFramePtr;
+
+class CSample
+{
+private: 
+	AVFramePtr m_frame;
+public:
+	CSample(AVFrame* pFrame) 
+	{
+		m_frame = AVFramePtr(pFrame, [](AVFrame* f) {  av_frame_free(&f); });
+	}
+	virtual ~CSample()
+	{
+	}
+
+	AVFrame* get() { return m_frame.get(); }
+};
 
 class CFileWriter
 {

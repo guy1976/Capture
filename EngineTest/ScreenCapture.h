@@ -1,18 +1,23 @@
 #pragma once
 
-#include "D3D9.h"
+class CSample;
 
-
+#include<stack>
 class CScreenCapture
 {
 	HDC m_sourceHDC,m_destHDC;
 	HWND m_hWND;
-	BITMAP m_bmp;
+	std::stack<HBITMAP> m_hBitmaps;
 	RECT m_currentRect;
+
+	void Free();
+
+	HBITMAP GetHBitmap();
+	void ReleaseHBitmap(HBITMAP hBmp);
 public:
 	CScreenCapture();
 	virtual ~CScreenCapture();
 	HRESULT Init(HWND hWND, RECT rect);
-	HRESULT Grab(HWND hWND);
+	HRESULT Grab(HWND hWND, CSample** frame);
 };
 

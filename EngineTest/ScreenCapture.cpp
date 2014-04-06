@@ -3,57 +3,54 @@
 
 #include "H264Encoder.h"
 
-CAudioCapture capture;
-std::shared_ptr<CFileWriter>  m_writer(new CFileWriter());
-CVideoEncoder encoder(m_writer);
-CAudioEncoder audioEncoder(m_writer);
-
-#pragma comment(lib,"d3d9.lib")
-
 
 #pragma comment(lib,"Gdiplus.lib")
 
 #include <GDIPlus.h>
-using namespace Gdiplus;
 
 
 int frameIndex = 0;
 CScreenCapture::CScreenCapture()
 {
-	m_writer->InitFile("c:\\1.mp4");
-	encoder.AddVideoStream( 1920, 1200, 4000);	
-	//audioEncoder.AddAudioStream();
-	capture.Init();
-	m_writer->Start();
 }
 
 
 CScreenCapture::~CScreenCapture()
 {
 }
-void GetCLSID(const WCHAR* format, CLSID* pClsid){
-	UINT  num = 0;          // number of image encoders
-	UINT  size = 0;         // size of the image encoder array in bytes
 
-	ImageCodecInfo* pImageCodecInfo = NULL;
 
-	GetImageEncodersSize(&num, &size);
-
-	pImageCodecInfo = (ImageCodecInfo*)(malloc(size));
-
-	GetImageEncoders(num, size, pImageCodecInfo);
-
-	for (UINT j = 0; j < num; ++j)
+void CScreenCapture::Free()
+{
+	if (m_sourceHDC != NULL)
 	{
-		if (wcscmp(pImageCodecInfo[j].MimeType, format) == 0)
-		{
-			*pClsid = pImageCodecInfo[j].Clsid;
-			free(pImageCodecInfo);
-		}
+		ReleaseDC(m_hWND, m_sourceHDC);
+		m_sourceHDC = NULL;
 	}
+	if (m_destHDC != NULL)
+	{
+		DeleteDC(m_destHDC);
+		m_destHDC = NULL;
+	}
+	while (!m_hBitmaps.empty())
+	{
+		HBITMAP ret = m_hBitmaps.top();
+		DeleteObject(ret);
+	}
+	m_hWND = NULL;
+	m_currentRect.left = m_currentRect.bottom = m_currentRect.right = m_currentRect.top = 0;
 }
 
-
+HBITMAP CScreenCapture::GetHBitmap()
+{
+	HBITMAP ret=m_hBitmaps.top();
+	m_hBitmaps.pop();
+	return ret;
+}
+void CScreenCapture::ReleaseHBitmap(HBITMAP hBmp)
+{
+	m_hBitmaps.push(hBmp);
+}
 HRESULT CScreenCapture::Init(HWND hWND,RECT rect)
 {
 
@@ -65,16 +62,9 @@ HRESULT CScreenCapture::Init(HWND hWND,RECT rect)
 	{
 		return S_OK;
 	}
-	if (m_sourceHDC != NULL)
-	{
-		ReleaseDC(m_hWND,m_sourceHDC);
-		m_sourceHDC = NULL;
-	}
-	if (m_destHDC != NULL)
-	{
-		DeleteDC(m_destHDC);
-		m_destHDC = NULL;
-	}
+
+	Free();
+	
 	m_currentRect = rect;
 	m_hWND = hWND;
 	m_sourceHDC = GetDC(hWND);
@@ -94,24 +84,31 @@ HRESULT CScreenCapture::Init(HWND hWND,RECT rect)
 	bmi.bmiHeader.biYPelsPerMeter = 0;
 	bmi.bmiHeader.biClrUsed = 0;
 	bmi.bmiHeader.biClrImportant = 0;
-	void *buffer = NULL;
-	HBITMAP hbmp = CreateDIBSection(m_destHDC, &bmi, DIB_RGB_COLORS, &buffer, NULL, 0);
 
-	SelectObject(m_destHDC, hbmp);
-	/* Get info from the bitmap */
-	GetObject(hbmp, sizeof(BITMAP), &m_bmp);
+	for (int i = 0; i < 5; i++)
+	{
+		void *buffer = NULL;
+		HBITMAP hbmp = CreateDIBSection(m_destHDC, &bmi, DIB_RGB_COLORS, &buffer, NULL, 0);
+
+		ReleaseHBitmap(hbmp);
+	}
 
 }
 
-int imageId = 0;
-HRESULT CScreenCapture::Grab(HWND hWnd)
+
+HRESULT CScreenCapture::Grab(HWND hWnd, CSample**pFrame)
 {
-	auto t0 = clock();
 
 	RECT ClientRect;
 	GetClientRect(hWnd, &ClientRect);
 	Init(hWnd, ClientRect);
 
+	HBITMAP hBitmap=GetHBitmap();
+
+	SelectObject(m_destHDC, hBitmap);
+	BITMAP bmp;
+	/* Get info from the bitmap */
+	GetObject(hBitmap, sizeof(BITMAP), &bmp);
 
 	RECT clip_rect;
 	GetClientRect(hWnd, &clip_rect);
@@ -123,24 +120,11 @@ HRESULT CScreenCapture::Grab(HWND hWnd)
 	{
 		printf("error grabbing...");
 	}
-	auto t1 = clock();
 
-	AVFramePtr videoFrame = AVFramePtr(CVideoEncoder::CreateVideoFrame((BYTE*)m_bmp.bmBits, m_bmp.bmWidth,abs(m_bmp.bmHeight), m_bmp.bmWidthBytes, AVPixelFormat::PIX_FMT_ARGB), [](AVFrame* f) {  av_frame_free(&f); });
+	AVFrame* videoFrame = CVideoEncoder::CreateVideoFrame((BYTE*)bmp.bmBits, bmp.bmWidth, abs(bmp.bmHeight), bmp.bmWidthBytes, AVPixelFormat::PIX_FMT_ARGB);
 	videoFrame->pts = (frameIndex++);
-	encoder.Encode(videoFrame.get());
-	auto t2 = clock();
-	printf("time to grab (%d)  encode (%d)\n", t1 - t0, t2 - t1);
+	*pFrame = new CSample(videoFrame);
 
-
-	/*
-	Bitmap image((INT)Desc.Width, (INT)Desc.Height, Desc.Width*4,PixelFormat32bppARGB, (BYTE*)LockedRect.pBits);
-	CLSID clsID;
-	GetCLSID(L"image/png", &clsID);
-	wchar_t fileName[100];
-	swprintf(fileName, 100, L"c:\\1\\pic-%d.png", imageId++);
-	image.Save(fileName, &clsID);
-	*/
-	//AVFramePtr audioSample = AVFramePtr(capture.ReadPacket(), [](AVFrame* f) {  av_frame_free(&f); });
-	//		audioEncoder.Encode(audioSample.get());
+	ReleaseHBitmap(hBitmap);
 	return S_OK;
 }
