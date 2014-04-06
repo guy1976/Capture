@@ -1,0 +1,7 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <BitmapImage x:Key="CameraIcon" UriSource="./Images/Camera.png" />
+    <BitmapImage x:Key="KalturaIcon" UriSource="./Images/Kaltura-Sun.png" />
+    <BitmapImage x:Key="PowerPointIcon" UriSource="./Images/Logo_Microsoft_PowerPoint_2013.png" />
+
+</ResourceDictionary>
