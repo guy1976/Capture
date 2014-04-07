@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="FFMpegWrappers">
+      <UniqueIdentifier>{009229e5-3a36-4d0e-9057-16c43ea567fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Capture">
+      <UniqueIdentifier>{0e50f6a1-12e8-4f78-8b11-d70ba7b9aff5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -24,11 +30,32 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ScreenCapture.h">
+    <ClInclude Include="FFMpegWrappers\VideoEncoder.h">
+      <Filter>FFMpegWrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="FFMpegWrappers\FFMpegCommon.h">
+      <Filter>FFMpegWrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="FFMpegWrappers\FileWriter.h">
+      <Filter>FFMpegWrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="FFMpegWrappers\AudioEncoder.h">
+      <Filter>FFMpegWrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="CapturePipeline.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="H264Encoder.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Capture\Capture.h">
+      <Filter>Capture</Filter>
+    </ClInclude>
+    <ClInclude Include="Capture\ScreenCapture.h">
+      <Filter>Capture</Filter>
+    </ClInclude>
+    <ClInclude Include="Capture\Utils.h">
+      <Filter>Capture</Filter>
+    </ClInclude>
+    <ClInclude Include="FFMpegWrappers\AudioCapture.h">
+      <Filter>Capture</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -38,11 +65,32 @@
     <ClCompile Include="EngineTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ScreenCapture.cpp">
+    <ClCompile Include="FFMpegWrappers\VideoEncoder.cpp">
+      <Filter>FFMpegWrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="FFMpegWrappers\FFMpegCommon.cpp">
+      <Filter>FFMpegWrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="FFMpegWrappers\FileWriter.cpp">
+      <Filter>FFMpegWrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="FFMpegWrappers\AudioEncoder.cpp">
+      <Filter>FFMpegWrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="CapturePipeline.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="H264Encoder.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Capture\Capture.cpp">
+      <Filter>Capture</Filter>
+    </ClCompile>
+    <ClCompile Include="Capture\ScreenCapture.cpp">
+      <Filter>Capture</Filter>
+    </ClCompile>
+    <ClCompile Include="Capture\Utils.cpp">
+      <Filter>Capture</Filter>
+    </ClCompile>
+    <ClCompile Include="FFMpegWrappers\AudioCapture.cpp">
+      <Filter>Capture</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

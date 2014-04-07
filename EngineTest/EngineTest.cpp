@@ -2,11 +2,10 @@
 //
 
 #include "stdafx.h"
-#include "ScreenCapture.h"
-#include "H264Encoder.h"
 #include <conio.h>
 #include <iostream>
 
+#include "CapturePipeline.h"
 #include <GDIPlus.h>
 
 void GetCLSID(const WCHAR* format, CLSID* pClsid)
@@ -55,31 +54,21 @@ int _tmain(int argc, _TCHAR* argv[])
 	ULONG_PTR gdiplusToken;
 	Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
 
-	CScreenCapture capture;
 	HWND hWnd = GetDesktopWindow();
 
-	CAudioCapture audioCapture;
-	std::shared_ptr<CFileWriter>  m_writer(new CFileWriter());
-	CVideoEncoder encoder(m_writer);
-	CAudioEncoder audioEncoder(m_writer);
-
-	m_writer->InitFile("c:\\1.mp4");
-	encoder.AddVideoStream(1920, 1200, 4000);
-	//audioEncoder.AddAudioStream();
-	audioCapture.Init();
-	m_writer->Start();
-
-	while (!_kbhit())
 	{
-		auto t0=clock();
-		CSample* sample;
-		capture.Grab(hWnd, &sample);
-		auto t1 = clock();
-		encoder.Encode(sample->get());
-		auto t2 = clock();
-		printf("time to grab (%d)  encode (%d)\n", t1 - t0, t2 - t1);
-		long timePassed=t2 - t0;
-		Sleep(__max(0,33 - timePassed));
+		CCapturePipeline pipeline;
+
+		pipeline.Init(hWnd);
+
+
+		pipeline.Start();
+		while (!_kbhit())
+		{
+			Sleep(10);
+		}
+		pipeline.Stop();
+
 	}
 	Gdiplus::GdiplusShutdown(gdiplusToken);
 	return 0;
