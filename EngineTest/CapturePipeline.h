@@ -7,6 +7,7 @@
 #include "FFMpegWrappers\AudioCapture.h"
 #include "FFMpegWrappers\VideoEncoder.h"
 
+#include ".\SceneDetector.h"
 #include <thread>         // std::thread
 
 class CCapturePipeline
@@ -16,6 +17,7 @@ class CCapturePipeline
 	std::unique_ptr<CAudioEncoder> m_audioEncoder;
 	std::unique_ptr<CScreenCapture> m_screenCapture;
 	std::unique_ptr<CAudioCapture> m_audioCapture;
+	std::unique_ptr<CSceneDetector> m_sceneDetector;
 	std::unique_ptr<std::thread> m_encoderThread;
 	bool m_bDone;
 	void EncoderThread();

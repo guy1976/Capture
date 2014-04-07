@@ -5,9 +5,9 @@
 #include <conio.h>
 #include <iostream>
 
-#include "CapturePipeline.h"
 #include <GDIPlus.h>
 
+#include "CapturePipeline.h"
 void GetCLSID(const WCHAR* format, CLSID* pClsid)
 {
 	UINT  num = 0;          // number of image encoders

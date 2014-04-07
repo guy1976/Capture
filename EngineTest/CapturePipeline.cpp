@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "CapturePipeline.h"
+#include "SceneDetector.h"
 
 
 CCapturePipeline::CCapturePipeline()
@@ -26,6 +27,8 @@ void CCapturePipeline::Init(HWND hWnd)
 	m_audioEncoder = std::make_unique<CAudioEncoder>(m_fileWriter);
 	m_audioEncoder->AddAudioStream();
 
+
+	m_sceneDetector = std::make_unique<CSceneDetector>();
 }
 
 void CCapturePipeline::Start()
@@ -45,10 +48,14 @@ void CCapturePipeline::EncoderThread()
 		CSample* pSample=m_screenCapture->GetSample();
 		if (pSample != NULL)
 		{
+
+
 			auto t0 = clock();
 			m_videoEncoder->Encode(pSample->get());
 			auto t1 = clock();
-			printf("time to  encode video (%d)\n", t1 - t0);
+		//	printf("time to  encode video (%d)\n", t1 - t0);
+
+			m_sceneDetector->ProcessImage(pSample);
 			delete pSample;
 		}
 		CSample* pAudioSample = m_audioCapture->GetSample();
@@ -57,7 +64,7 @@ void CCapturePipeline::EncoderThread()
 			auto t0 = clock();
 			m_audioEncoder->Encode(pAudioSample->get());
 			auto t1 = clock();
-			printf("time to  encode audio (%d)\n", t1 - t0);
+		//	printf("time to  encode audio (%d)\n", t1 - t0);
 			delete pAudioSample;
 		}
 

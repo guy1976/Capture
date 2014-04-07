@@ -19,6 +19,9 @@
     <Filter Include="Capture">
       <UniqueIdentifier>{0e50f6a1-12e8-4f78-8b11-d70ba7b9aff5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Algorithm">
+      <UniqueIdentifier>{c0751db1-08f6-4943-8cdf-94cd4d0bb65f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -57,6 +60,9 @@
     <ClInclude Include="FFMpegWrappers\AudioCapture.h">
       <Filter>Capture</Filter>
     </ClInclude>
+    <ClInclude Include="SceneDetector.h">
+      <Filter>Algorithm</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -91,6 +97,9 @@
     </ClCompile>
     <ClCompile Include="FFMpegWrappers\AudioCapture.cpp">
       <Filter>Capture</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneDetector.cpp">
+      <Filter>Algorithm</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
