@@ -35,7 +35,7 @@
 char* window_name = "Edge Map";
 char* window_name2 = "Edge Map2";
 
-CSceneDetector::CSceneDetector()
+CSceneDetector::CSceneDetector() : m_index(0)
 {
 
 }
@@ -63,36 +63,54 @@ void CSceneDetector::ProcessImage(CSample *pSample)
 
 	cv::namedWindow(window_name, CV_WINDOW_AUTOSIZE);
 	auto t0 = clock();
-	cv::Mat a = PrepareAnalysisImage(pSample->get()->width, pSample->get()->height, pSample->get()->data[0]);
-	cv::Mat canny = Canny(a);
+	cv::Mat original(pSample->get()->height, pSample->get()->width, CV_8UC4, pSample->get()->data[0]);
+	cv::Mat currentImage = PrepareAnalysisImage(original);
+	cv::Mat canny = Canny(currentImage);
 
 
 	cv::Mat res;
-	//if (!m_lastCapture.empty())
-		// compute difference
-	//	cvAbsDiff(&canny, &m_lastCapture, &res);
 
-	double diff = 0;// m_lastCapture.empty() ? 0 : cv::matchShapes(canny, m_lastCapture, CV_CONTOURS_MATCH_I3, 0);
+	bool bIsDifferent = m_lastCanny.empty() || IsDifferent(canny, m_lastCanny);
+	if (bIsDifferent)
+	{
+		m_lastDifferentImageTime = time;
+		m_bIsSeq = false;
+	}
+	else
+	{
+		if (time > m_lastDifferentImageTime + std::chrono::seconds(1))
+		{
+			if (!m_bIsSeq)
+			{
+				m_bIsSeq = true;
+				m_lastStableImage = original;
+				m_index++;
+				char buffer[1024];
+				sprintf_s(buffer, "c:\\1\\Scene_%d.jpg", m_index);
+				cv::imwrite(buffer, m_lastStableImage);
+			}
+
+		}
+	}
 
 	auto t1 = clock();
-	printf("time to  process video (%d) %lf\n", t1 - t0, diff);
+	printf("time to  process video (%d)\n", t1 - t0);
 	m_lastCaptureTime = time;
+	m_lastCanny = canny;
 	
 	cv::imshow(window_name, canny);
 	cv::waitKey(1);
 
-	m_lastCapture = canny;
 }
 
 
-cv::Mat CSceneDetector::PrepareAnalysisImage(int width, int height, unsigned char* pData)
+cv::Mat CSceneDetector::PrepareAnalysisImage(const cv::Mat& src)
 {
-	cv::Mat src(height, width,CV_8UC4, pData);
 	
 	cv::Mat src_gray, resized;
 	cvtColor(src, src_gray, CV_RGB2GRAY);
 
-	cv::resize(src_gray, resized, cv::Size(width / 4, height / 4), 0, 0, cv::INTER_NEAREST);
+	cv::resize(src_gray, resized, cv::Size(src.cols/ 4, src.rows/ 4), 0, 0, cv::INTER_NEAREST);
 
 	return resized;
 }
@@ -114,4 +132,17 @@ cv::Mat CSceneDetector::Canny(const cv::Mat& source)
 
 	source.copyTo(dst, detected_edges);
 	return dst;
+}
+
+
+bool CSceneDetector::IsDifferent(const cv::Mat& in1, const cv::Mat& in2)
+{
+	cv::Mat diff;
+	cv::compare(in1, in2, diff, cv::CMP_NE);
+	int value = cv::countNonZero(diff);
+
+	int threshold = (double)(in1.rows * in1.cols) * 0.05;
+
+	printf("Found (%d) pixels changes\n", value);
+	return  (value > threshold);
 }

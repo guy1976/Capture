@@ -36,7 +36,7 @@ class CScreenCapture : public CCapture
 	void Free(); 
 	std::shared_ptr<CBitmapCache> m_bitmapCache;
 	HRESULT Init(HWND hWND, RECT rect);
-	std::chrono::system_clock::time_point m_lastCaptureTime;
+	std::chrono::system_clock::time_point m_lastCaptureTime,m_firstCaptureFrame;
 	CSample* Capture();
 public:
 	CScreenCapture();

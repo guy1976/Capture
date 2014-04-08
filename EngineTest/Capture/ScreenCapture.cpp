@@ -1,13 +1,15 @@
 #include "..\stdafx.h"
 #include "ScreenCapture.h"
+#include <chrono>
 
 #include "..\FFMpegWrappers\FFMpegCommon.h"
+
+
 
 
 #pragma comment(lib,"Gdiplus.lib")
 
 #include <GDIPlus.h>
-
 
 CScreenCaptureSample::CScreenCaptureSample(std::shared_ptr<CBitmapCache> cache, HBITMAP hBMP)
 {
@@ -26,7 +28,6 @@ CScreenCaptureSample::~CScreenCaptureSample()
 	m_bitmapCache->Add(m_hBMP);
 }
 
-int frameIndex = 0;
 CScreenCapture::CScreenCapture()
 {
 	m_bitmapCache = std::make_shared<CBitmapCache>();
@@ -101,7 +102,7 @@ HRESULT CScreenCapture::Init(HWND hWND,RECT rect)
 
 CSample* CScreenCapture::Capture()
 {  
-	auto time=std::chrono::steady_clock::now();
+	auto time = std::chrono::system_clock::now();
 
 	auto diff = time-m_lastCaptureTime;
 
@@ -110,8 +111,12 @@ CSample* CScreenCapture::Capture()
 	{
 		std::this_thread::sleep_for(timeToSleep);
 	}
+	std::chrono::system_clock::time_point m = std::chrono::system_clock::from_time_t(0);
+	if (m_firstCaptureFrame==m )
+		m_firstCaptureFrame = time;
+		
+		
 	m_lastCaptureTime = time;
-
 
 	auto t1 = clock();
 
@@ -137,11 +142,11 @@ CSample* CScreenCapture::Capture()
 	}
 
 	auto pFrame = new CScreenCaptureSample(m_bitmapCache, hBitmap);
-
-	pFrame->get()->pts = (frameIndex++);
+	auto diff2 = (time - m_firstCaptureFrame);
+	pFrame->get()->pts = diff2.count()/333333;
 
 	auto t2 = clock();
-	printf("time to capture (%d) \n", t2-t1);
+	printf("time to capture (%d) %I64d\n", t2 - t1, pFrame->get()->pts);
 	return pFrame;
 }
 

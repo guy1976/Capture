@@ -14,6 +14,7 @@ extern "C"
 	#include "libavformat/avformat.h"
 	#include "libavdevice/avdevice.h"
 	#include "libavutil/time.h"
+	#include "libavutil/audio_fifo.h"
 }
 
 #include <memory>

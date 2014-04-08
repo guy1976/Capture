@@ -8,11 +8,15 @@
 
 class CSceneDetector
 {
-	cv::Mat PrepareAnalysisImage(int width, int height, unsigned char* pData);
+	cv::Mat PrepareAnalysisImage(const cv::Mat& src);
 	cv::Mat Canny(const cv::Mat&);
+	bool IsDifferent(const cv::Mat&, const cv::Mat&);
 	std::chrono::system_clock::time_point m_lastCaptureTime;
-	std::chrono::system_clock::time_point m_lastStable;
-	cv::Mat m_lastCapture;
+	std::chrono::system_clock::time_point m_lastDifferentImageTime;
+	cv::Mat m_lastCanny;
+	cv::Mat m_lastStableImage;
+	int m_index;
+	bool m_bIsSeq;
 public:
 	CSceneDetector();
 	~CSceneDetector();
