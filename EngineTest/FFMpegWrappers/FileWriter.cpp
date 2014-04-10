@@ -3,7 +3,7 @@
 CFileWriter::CFileWriter()
 {
 }
-//D:\Users\Gjacubovski>ffmpeg - f gdigrab - i desktop - vcodec libx264 - preset ultrafast - b:v 200k - f mp4 - movflags  frag_keyframe  out.mp4
+//ffmpeg -f gdigrab -i desktop -vcodec libx264 -preset ultrafast -b:v 200k -f mp4 - movflags  frag_keyframe  c:\1.mp4
 
 CFileWriter::~CFileWriter()
 {

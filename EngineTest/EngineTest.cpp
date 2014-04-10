@@ -57,17 +57,20 @@ int _tmain(int argc, _TCHAR* argv[])
 	HWND hWnd = GetDesktopWindow();
 
 	{
-		CCapturePipeline pipeline;
+		CCapturePipeline pipeline1, pipeline2;
 
-		pipeline.Init(hWnd);
+		pipeline1.Init(hWnd, "", "", "c:\\screen.mp4");
+		pipeline2.Init(NULL, "video=Integrated Camera", "audio=Microphone (Realtek High Defini", "c:\\cam.mp4");
 
 
-		pipeline.Start();
+		pipeline1.Start();
+		pipeline2.Start();
 		while (!_kbhit())
 		{
 			Sleep(10);
 		}
-		pipeline.Stop();
+		pipeline1.Stop();
+		pipeline2.Stop();
 
 	}
 	Gdiplus::GdiplusShutdown(gdiplusToken);

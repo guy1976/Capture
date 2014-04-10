@@ -158,6 +158,7 @@
     <ClInclude Include="FFMpegWrappers\AudioEncoder.h" />
     <ClInclude Include="FFMpegWrappers\FFMpegCommon.h" />
     <ClInclude Include="FFMpegWrappers\FileWriter.h" />
+    <ClInclude Include="FFMpegWrappers\VideoCapture.h" />
     <ClInclude Include="FFMpegWrappers\VideoEncoder.h" />
     <ClInclude Include="SceneDetector.h" />
     <ClInclude Include="stdafx.h" />
@@ -186,6 +187,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="FFMpegWrappers\FileWriter.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="FFMpegWrappers\VideoCapture.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="FFMpegWrappers\VideoEncoder.cpp">

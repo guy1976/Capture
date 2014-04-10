@@ -1,7 +1,7 @@
 #include "FileWriter.h"
 #include "VideoEncoder.h"
 
-void CVideoEncoder::AddVideoStream(int width, int height, int bitrate)
+void CVideoEncoder::AddVideoStream(int width, int height,AVPixelFormat inputPixelFormat, int bitrate)
 {
 	if (m_videoCodec)
 	{
@@ -48,7 +48,7 @@ void CVideoEncoder::AddVideoStream(int width, int height, int bitrate)
 
 
 	SwsContext * ctx = sws_getContext(width, height,
-		AV_PIX_FMT_RGB32, cc->width, cc->height,
+		inputPixelFormat, cc->width, cc->height,
 		AV_PIX_FMT_YUV420P, 0, 0, 0, 0);
 
 	m_swsContext = std::unique_ptr<SwsContext, std::function<void(SwsContext *)>>(ctx, [](SwsContext* ptr) { sws_freeContext(ptr); });
@@ -93,7 +93,7 @@ void CVideoEncoder::Encode(AVFrame* inputFrame)
 		auto size = pkt.size;
 		int val = av_write_frame(pContext, &pkt);
 		//int val = av_interleaved_write_frame(pContext, &pkt);
-	//	printf("H264 wrote %d bytes (%d)\n", size, val);
+		printf("H264 wrote %d bytes (%d)\n", size, val);
 		//fwrite(pkt.data, 1, pkt.size, m_fileName.get());
 	}
 	av_free_packet(&pkt);

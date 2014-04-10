@@ -35,10 +35,13 @@ class CScreenCapture : public CCapture
 
 	void Free(); 
 	std::shared_ptr<CBitmapCache> m_bitmapCache;
-	HRESULT Init(HWND hWND, RECT rect);
 	std::chrono::system_clock::time_point m_lastCaptureTime,m_firstCaptureFrame;
 	CSample* Capture();
+	AVCodecContext m_codecContext;
 public:
+	HRESULT Init(HWND hWND, RECT rect);
+	int TotalStreams();
+	AVCodecContext* GetAVCodecContext(int index);
 	CScreenCapture();
 	virtual ~CScreenCapture();
 };

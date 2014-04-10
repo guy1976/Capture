@@ -14,6 +14,6 @@ protected:
 	std::unique_ptr<AVFrame, std::function<void(AVFrame *)>> m_pictureYUV;
 	std::unique_ptr<AVStream, std::function<void(AVStream *)>> m_videoStream;
 public:
-	void AddVideoStream(int width, int height, int bitrate);
+	void AddVideoStream(int width, int height, AVPixelFormat pixelFormat, int bitrate);
 	void Encode(AVFrame* frame);
 };

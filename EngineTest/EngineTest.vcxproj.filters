@@ -63,6 +63,9 @@
     <ClInclude Include="SceneDetector.h">
       <Filter>Algorithm</Filter>
     </ClInclude>
+    <ClInclude Include="FFMpegWrappers\VideoCapture.h">
+      <Filter>Capture</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -100,6 +103,9 @@
     </ClCompile>
     <ClCompile Include="SceneDetector.cpp">
       <Filter>Algorithm</Filter>
+    </ClCompile>
+    <ClCompile Include="FFMpegWrappers\VideoCapture.cpp">
+      <Filter>Capture</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

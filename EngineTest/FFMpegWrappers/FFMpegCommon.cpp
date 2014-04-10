@@ -36,13 +36,20 @@ AVFrame* CreateAudioFrame(uint8_t *pBuffer, int bufferSize)
 	return frame;
 }
 
-AVFrame* CreateVideoFrame(uint8_t*pBuffer, int width, int height, int stride, AVPixelFormat format)
+AVFrame* CreateVideoFrame(uint8_t*pBuffer, int width, int height, int stride, AVPixelFormat pix_fmt,bool copy)
 {
 	auto frame = av_frame_alloc();
-	frame->data[0] = pBuffer;
-	frame->linesize[0] = stride;
 	frame->width = width;
 	frame->height = height;
-	frame->format = format;
+	frame->format = pix_fmt;
+	if (copy)
+	{
+		frame->data[0] = pBuffer;
+		frame->linesize[0] = stride;
+	}
+	else
+	{
+		av_image_alloc(frame->data, frame->linesize, frame->width, frame->height, pix_fmt, 32);
+	}
 	return frame;
 }

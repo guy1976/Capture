@@ -94,7 +94,7 @@ void CSceneDetector::ProcessImage(CSample *pSample)
 	}
 
 	auto t1 = clock();
-	printf("time to  process video (%d)\n", t1 - t0);
+//	printf("time to  process video (%d)\n", t1 - t0);
 	m_lastCaptureTime = time;
 	m_lastCanny = canny;
 	

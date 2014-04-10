@@ -50,5 +50,5 @@ public:
 
 
 
-AVFrame* CreateVideoFrame(uint8_t *pBuffer, int width, int height, int stride, AVPixelFormat format);
+AVFrame* CreateVideoFrame(uint8_t *pBuffer, int width, int height, int stride, AVPixelFormat format, bool copy);
 AVFrame* CreateAudioFrame(uint8_t *pBuffer, int bufferSize);

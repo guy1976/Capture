@@ -1,7 +1,9 @@
 #include "FileWriter.h"
 #include "AudioEncoder.h"
 
-void CAudioEncoder::AddAudioStream()
+
+
+void CAudioEncoder::AddAudioStream(int bitrate)
 {
 	if (m_audioCodec)
 	{
@@ -24,7 +26,7 @@ void CAudioEncoder::AddAudioStream()
 
 	AVCodecContext* cc = m_audioStream->codec;
 	cc->sample_fmt = AV_SAMPLE_FMT_S16;
-	cc->bit_rate = 64000;
+	cc->bit_rate = bitrate*1000;
 	cc->sample_rate = 44100;
 	cc->channel_layout = AV_CH_LAYOUT_STEREO;
 	cc->channels = 2;
@@ -46,46 +48,23 @@ void CAudioEncoder::AddAudioStream()
 	m_fifo =av_audio_fifo_alloc(AV_SAMPLE_FMT_S16,2, 1);
 
 
-}
-/**
-* Initialize one input frame for writing to the output file.
-* The frame will be exactly frame_size samples large.
-*/
-static int init_output_frame(AVFrame **frame,
-	AVCodecContext *output_codec_context,
-	int frame_size)
-{
-	int error;
+	m_tempFrame = std::unique_ptr<AVFrame, std::function<void(AVFrame *)>>(av_frame_alloc(), [](AVFrame* ptr) {av_frame_free(&ptr); });
+	
+	m_tempFrame->nb_samples = m_frame_size;
+	m_tempFrame->channel_layout = cc->channel_layout;
+	m_tempFrame->format = cc->sample_fmt;
+	m_tempFrame->sample_rate = cc->sample_rate;
 
-	/** Create a new frame to store the audio samples. */
-	if (!(*frame = av_frame_alloc())) {
-		fprintf(stderr, "Could not allocate output frame\n");
-		return AVERROR_EXIT;
-	}
-
-	/**
-	* Set the frame's parameters, especially its size and format.
-	* av_frame_get_buffer needs this to allocate memory for the
-	* audio samples of the frame.
-	* Default channel layouts based on the number of channels
-	* are assumed for simplicity.
-	*/
-	(*frame)->nb_samples = frame_size;
-	(*frame)->channel_layout = output_codec_context->channel_layout;
-	(*frame)->format = output_codec_context->sample_fmt;
-	(*frame)->sample_rate = output_codec_context->sample_rate;
-
+	int error = 0;
 	/**
 	* Allocate the samples of the created frame. This call will make
 	* sure that the audio frame can hold as many samples as specified.
 	*/
-	if ((error = av_frame_get_buffer(*frame, 0)) < 0) 
+	if ((error = av_frame_get_buffer(m_tempFrame.get(), 0)) < 0)
 	{
-		av_frame_free(frame);
-		return error;
+		return ;
 	}
 
-	return 0;
 }
 
 
@@ -110,21 +89,17 @@ void CAudioEncoder::Encode(AVFrame* inputSample)
 	}
 	do
 	{
-		AVFrame *output_frame;
-		int frame_size = FFMIN(av_audio_fifo_size(m_fifo), m_frame_size);
-		if (frame_size < m_frame_size)
+		int current_frame_size = FFMIN(av_audio_fifo_size(m_fifo), m_frame_size);
+		if (current_frame_size < m_frame_size)
 			break;
 
-		/** Initialize temporary storage for one output frame. */
-		if (init_output_frame(&output_frame, m_audioStream->codec, frame_size))
-			return;
+		m_tempFrame->nb_samples = current_frame_size;
 
-		if (av_audio_fifo_read(m_fifo, (void **)output_frame->data, frame_size) < frame_size)
+		if (av_audio_fifo_read(m_fifo, (void **)m_tempFrame->data, current_frame_size) < current_frame_size)
 		{
 			fprintf(stderr, "Could not read data from FIFO\n");
 			return;
 		}
-
 
 		AVPacket pkt;
 		av_init_packet(&pkt);
@@ -132,7 +107,7 @@ void CAudioEncoder::Encode(AVFrame* inputSample)
 		pkt.size = 0;
 		int got_output;
 
-		int out_size = avcodec_encode_audio2(pContext, &pkt, output_frame, &got_output);
+		int out_size = avcodec_encode_audio2(pContext, &pkt, m_tempFrame.get(), &got_output);
 		if (got_output)
 		{
 			pkt.stream_index = m_audioStream->index;
@@ -142,7 +117,7 @@ void CAudioEncoder::Encode(AVFrame* inputSample)
 			pkt.duration = av_rescale_q(pkt.duration, pContext->time_base, m_audioStream->time_base);
 			pkt.pos = -1;
 
-			printf("AAC wrote %d bytes \n", pkt.size);
+			//printf("AAC wrote %d bytes \n", pkt.size);
 			auto pContext = m_pfileWriter->GetContext();
 			av_interleaved_write_frame(pContext, &pkt);
 			//fwrite(pkt.data, 1, pkt.size, m_fileName.get());

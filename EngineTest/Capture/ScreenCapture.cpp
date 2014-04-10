@@ -20,7 +20,7 @@ CScreenCaptureSample::CScreenCaptureSample(std::shared_ptr<CBitmapCache> cache, 
 	/* Get info from the bitmap */
 	GetObject(hBMP, sizeof(BITMAP), &bmp);
 
-	auto frame = ::CreateVideoFrame((BYTE*)bmp.bmBits, bmp.bmWidth, abs(bmp.bmHeight), bmp.bmWidthBytes, AVPixelFormat::PIX_FMT_ARGB);
+	auto frame = ::CreateVideoFrame((BYTE*)bmp.bmBits, bmp.bmWidth, abs(bmp.bmHeight), bmp.bmWidthBytes, AVPixelFormat::PIX_FMT_ARGB,true);
 	Attach(frame);
 }
 CScreenCaptureSample::~CScreenCaptureSample()
@@ -96,6 +96,15 @@ HRESULT CScreenCapture::Init(HWND hWND,RECT rect)
 
 		m_bitmapCache->Add(hBmp);
 	}
+
+	m_codecContext.width = bmi.bmiHeader.biWidth;
+	m_codecContext.height = FFABS(bmi.bmiHeader.biHeight);
+	if (bpp == 16 || bpp==15)
+		m_codecContext.pix_fmt = PIX_FMT_RGB555;
+	if (bpp == 24)
+		m_codecContext.pix_fmt = PIX_FMT_RGB24;
+	if (bpp == 32)
+		m_codecContext.pix_fmt = PIX_FMT_RGB32;
 	return S_OK;
 }
 
@@ -111,6 +120,7 @@ CSample* CScreenCapture::Capture()
 	{
 		std::this_thread::sleep_for(timeToSleep);
 	}
+
 	std::chrono::system_clock::time_point m = std::chrono::system_clock::from_time_t(0);
 	if (m_firstCaptureFrame==m )
 		m_firstCaptureFrame = time;
@@ -121,17 +131,13 @@ CSample* CScreenCapture::Capture()
 	auto t1 = clock();
 
 
-	HWND hWnd=GetDesktopWindow();
-	RECT ClientRect;
-	GetClientRect(hWnd, &ClientRect);
-	Init(hWnd, ClientRect);
 
 	HBITMAP hBitmap = m_bitmapCache->Pop();
 
 	SelectObject(m_destHDC, hBitmap);
 
 	RECT clip_rect;
-	GetClientRect(hWnd, &clip_rect);
+	GetClientRect(m_hWND, &clip_rect);
 	if (!BitBlt(m_destHDC, 0, 0,
 			clip_rect.right - clip_rect.left,
 			clip_rect.bottom - clip_rect.top,
@@ -154,3 +160,13 @@ CSample* CScreenCapture::Capture()
 
 
 
+
+
+int CScreenCapture::TotalStreams()
+{
+	return 1;
+}
+AVCodecContext* CScreenCapture::GetAVCodecContext(int index)
+{
+	return &m_codecContext;
+}

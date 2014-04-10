@@ -5,6 +5,7 @@
 #include "FFMpegWrappers\FileWriter.h"
 #include "FFMpegWrappers\AudioEncoder.h"
 #include "FFMpegWrappers\AudioCapture.h"
+#include "FFMpegWrappers\VideoCapture.h"
 #include "FFMpegWrappers\VideoEncoder.h"
 
 #include ".\SceneDetector.h"
@@ -16,6 +17,7 @@ class CCapturePipeline
 	std::unique_ptr<CVideoEncoder> m_videoEncoder;
 	std::unique_ptr<CAudioEncoder> m_audioEncoder;
 	std::unique_ptr<CScreenCapture> m_screenCapture;
+	std::unique_ptr<CVideoCapture> m_videoCapture;
 	std::unique_ptr<CAudioCapture> m_audioCapture;
 	std::unique_ptr<CSceneDetector> m_sceneDetector;
 	std::unique_ptr<std::thread> m_encoderThread;
@@ -24,7 +26,7 @@ class CCapturePipeline
 public:
 	CCapturePipeline();
 	virtual ~CCapturePipeline();
-	void Init(HWND hWND);
+	void Init(HWND hScreen, const std::string& videoInput, const std::string& audioInput, const std::string& fileOutput);
 	void Start();
 	void Stop();
 };

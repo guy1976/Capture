@@ -3,7 +3,7 @@
 #include "FFMpegCommon.h"
 #include "..\Capture\Capture.h"
 
-class CAudioCapture : public CFFCapture
+class CVideoCapture : public CFFCapture
 {
 
 };

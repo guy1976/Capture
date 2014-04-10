@@ -13,7 +13,8 @@ protected:
 	AVAudioFifo* m_fifo;
 	std::unique_ptr<AVCodec, std::function<void(AVCodec *)>> m_audioCodec;
 	std::unique_ptr<AVStream, std::function<void(AVStream *)>> m_audioStream;
+	std::unique_ptr<AVFrame, std::function<void(AVFrame *)>> m_tempFrame;
 public:
-	void AddAudioStream();
+	void AddAudioStream(int bitrate);
 	void Encode(AVFrame* inputSample);
 };
