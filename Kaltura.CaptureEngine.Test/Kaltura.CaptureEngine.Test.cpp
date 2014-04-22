@@ -6,6 +6,7 @@
 #include <conio.h>
 #include "..\Kaltura.CaptureEngine\Exports.h"
 
+#include <string>
 
 #pragma comment(lib,"..\\Debug\\Kaltura.CaptureEngine.lib")
 #pragma comment(lib,"..\\Debug\\Kaptura.VideoSegmentation.lib")
@@ -16,14 +17,14 @@ extern "C" __declspec(dllimport) CCaptureEngineSamplesProcessor* CreateSceneDete
 int _tmain(int argc, _TCHAR* argv[])
 {
 	
+	CaptureDevice devices[32];
+	EnumDevices(devices);
 
-	//	CEnumDevices a;
-	//a.Enum();
 
 	HWND hWnd = GetDesktopWindow();
 
 	auto sceneDetector = CreateSceneDetector();
-
+	
 	{
 		auto pipeline1 = CreatePipeline();
 
@@ -35,9 +36,8 @@ int _tmain(int argc, _TCHAR* argv[])
 
 		auto pipeline2 = CreatePipeline();
 		SetOutputFile(pipeline2, "c:\\cam.mp4");
-		AddCameraSource(pipeline2, "video=Integrated Camera");
-		AddAudioSource(pipeline2,"audio=Microphone (Realtek High Defini");
-
+		//AddCameraSource(pipeline2, devices[1].FFMpegInput);
+	//	AddAudioSource(pipeline2, devices[2].FFMpegInput);
 		Start(pipeline1);
 		Start(pipeline2);
 		while (!_kbhit())

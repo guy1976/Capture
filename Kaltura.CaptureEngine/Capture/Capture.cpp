@@ -12,6 +12,15 @@ CCapture::CCapture()
 
 
 
+CCapture::~CCapture()
+{
+}
+CSample* CCapture::Preview()
+{
+	CSample* pSample = Capture();
+	return pSample;
+}
+
 void CCapture::CaptureThread()
 {
 	while (!m_bDone)

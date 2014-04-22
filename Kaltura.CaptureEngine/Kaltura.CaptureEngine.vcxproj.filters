@@ -60,6 +60,9 @@
     <ClInclude Include=".\FFMpegWrappers\AudioEncoder.h">
       <Filter>FFMpegWrappers</Filter>
     </ClInclude>
+    <ClInclude Include="EnumDevices.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
