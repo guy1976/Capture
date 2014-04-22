@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "CapturePipeline.h"
 
-
 CCapturePipeline::CCapturePipeline()
 {
 }
@@ -11,41 +10,45 @@ CCapturePipeline::~CCapturePipeline()
 {
 }
 
-void CCapturePipeline::Init(HWND hScreen, const std::string& videoInput, const std::string& audioInput, const std::string& fileOutput)
+void CCapturePipeline::AddVideo(const std::string& videoInput)
+{
+	m_videoCapture = std::make_unique<CVideoCapture>();
+	m_videoCapture->Init(videoInput.c_str());
+	auto context = m_videoCapture->GetAVCodecContext(0);
+	AddVideo(context);
+}
+
+void CCapturePipeline::AddAudio(const std::string& input)
+{
+	m_audioCapture = std::make_unique<CAudioCapture>();
+	m_audioCapture->Init(input.c_str());
+	m_audioEncoder = std::make_unique<CAudioEncoder>(m_fileWriter);
+	m_audioEncoder->AddAudioStream(64);
+}
+
+
+void CCapturePipeline::AddScreenCapture(HWND hScreen)
+{
+	m_screenCapture = std::make_unique<CScreenCapture>();
+	RECT ClientRect;
+	GetClientRect(hScreen, &ClientRect);
+	m_screenCapture->Init(hScreen, ClientRect);
+	auto context = m_screenCapture->GetAVCodecContext(0);
+	AddVideo(context);
+}
+
+void CCapturePipeline::AddVideo(AVCodecContext* context)
+{
+	m_videoEncoder = std::make_unique<CVideoEncoder>(m_fileWriter);
+	m_videoEncoder->AddVideoStream(context->width, context->height, context->pix_fmt, 1000);
+}
+
+void CCapturePipeline::SetOutputFile(const std::string& fileName)
 {
 	m_fileWriter = std::make_shared<CFileWriter>();
-	m_fileWriter->InitFile(fileOutput.c_str());
-
-	m_videoEncoder = std::make_unique<CVideoEncoder>(m_fileWriter);
-	AVCodecContext* context;
-	if (!videoInput.empty())
-	{
-		m_videoCapture = std::make_unique<CVideoCapture>();
-		m_videoCapture->Init(videoInput.c_str());
-
-		context = m_videoCapture->GetAVCodecContext(0);
-	}
-	else
-	{
-		m_screenCapture = std::make_unique<CScreenCapture>();
-		RECT ClientRect;
-		GetClientRect(hScreen, &ClientRect);
-		m_screenCapture->Init(hScreen, ClientRect);
-		context = m_screenCapture->GetAVCodecContext(0);
-	}
-
-	
-	m_videoEncoder->AddVideoStream(context->width, context->height, context->pix_fmt, 1000);
-
-	
-	if (!audioInput.empty())
-	{
-		m_audioCapture = std::make_unique<CAudioCapture>();
-		m_audioCapture->Init(audioInput.c_str());
-		m_audioEncoder = std::make_unique<CAudioEncoder>(m_fileWriter);
-		m_audioEncoder->AddAudioStream(64);
-	}
+	m_fileWriter->InitFile(fileName.c_str());
 }
+
 
 void CCapturePipeline::Start()
 {
@@ -68,13 +71,18 @@ void CCapturePipeline::EncoderThread()
 	{
 		std::this_thread::sleep_for(std::chrono::microseconds(1));
 		CSample* pSample = m_screenCapture ? m_screenCapture->GetSample() : m_videoCapture->GetSample();
+
+		for (auto iter = m_processors.begin(); iter < m_processors.end();iter++)
+		{
+			//aCCaptureEngineVideoSample videoSample;
+			//(*iter)->ProcessSample((CCaptureEngineSample*)&videoSample);
+		}
 		if (pSample != NULL)
 		{
 			auto t0 = clock();
 			m_videoEncoder->Encode(pSample->get());
 			auto t1 = clock();
 		//	printf("time to  encode video (%d)\n", t1 - t0);
-
 			///if (m_screenCapture)
 			//	m_sceneDetector->ProcessImage(pSample);
 			delete pSample;

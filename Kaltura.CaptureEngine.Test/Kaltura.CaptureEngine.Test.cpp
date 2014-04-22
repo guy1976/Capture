@@ -21,10 +21,15 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	{
 		auto pipeline1 = CreatePipeline();
-		auto pipeline2 = CreatePipeline();
 
-		InitPipeline(pipeline1,hWnd, "", "", "c:\\screen.mp4");
-		InitPipeline(pipeline2,NULL, "video=Integrated Camera", "audio=Microphone (Realtek High Defini", "c:\\cam.mp4");
+
+		SetOutputFile(pipeline1, "c:\\screen.mp4");
+		AddScreenSource(pipeline1, hWnd);
+
+		auto pipeline2 = CreatePipeline();
+		SetOutputFile(pipeline2, "c:\\cam.mp4");
+		AddCameraSource(pipeline2, "video=Integrated Camera");
+		AddAudioSource(pipeline2,"audio=Microphone (Realtek High Defini");
 
 		Start(pipeline1);
 		Start(pipeline2);

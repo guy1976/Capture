@@ -71,9 +71,6 @@
     <ClCompile Include=".\CapturePipeline.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include=".\EngineTest.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include=".\EnumDevices.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

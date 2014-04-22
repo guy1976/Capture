@@ -27,6 +27,12 @@
 #pragma comment(lib, "opencv_nonfree248.lib")
 #pragma comment(lib, "opencv_flann248.lib")
 #pragma comment(lib, "zlib.lib")
+#pragma comment(lib, "libjpeg.lib")
+#pragma comment(lib, "IlmImf.lib")
+#pragma comment(lib, "libjasper.lib")
+#pragma comment(lib, "libjasper.lib")
+#pragma comment(lib, "libpng.lib")
+#pragma comment(lib, "libtiff.lib")
 #endif
 
 #pragma comment(lib,"comctl32.lib")
@@ -53,8 +59,10 @@ int ratio = 3;
 int kernel_size = 3;
 
 
-void CSceneDetector::ProcessImage(CSample *pSample)
+void CSceneDetector::ProcessSample(CCaptureEngineSample *pSample)
 {
+	auto pVideoSample = (CCaptureEngineVideoSample*)pSample;
+
 	auto time = std::chrono::steady_clock::now();
 
 	if (time < m_lastCaptureTime + std::chrono::seconds(1))
@@ -63,7 +71,7 @@ void CSceneDetector::ProcessImage(CSample *pSample)
 
 	cv::namedWindow(window_name, CV_WINDOW_AUTOSIZE);
 	auto t0 = clock();
-	cv::Mat original(pSample->get()->height, pSample->get()->width, CV_8UC4, pSample->get()->data[0]);
+	cv::Mat original(pVideoSample->GetHeight(), pVideoSample->GetWidth(), CV_8UC4, pVideoSample->GetStride());
 	cv::Mat currentImage = PrepareAnalysisImage(original);
 	cv::Mat canny = Canny(currentImage);
 

@@ -8,11 +8,23 @@ CCaptureEnginePtr CreatePipeline()
 	return new CCapturePipeline();
 }
 
-void InitPipeline(CCaptureEnginePtr pipeLine, void* hScreen, char * videoInput, char* audioInput, char* fileoutput)
+void AddAudioSource(CCaptureEnginePtr pipeLine, char * inputName)
 {
-	((CCapturePipeline*)pipeLine)->Init((HWND)hScreen, videoInput, audioInput, fileoutput);
+	((CCapturePipeline*)pipeLine)->AddAudio(inputName);
 }
 
+void AddCameraSource(CCaptureEnginePtr pipeLine, char * inputName)
+{
+	((CCapturePipeline*)pipeLine)->AddVideo(inputName);
+}
+void AddScreenSource(CCaptureEnginePtr pipeLine, void * handle)
+{
+	((CCapturePipeline*)pipeLine)->AddScreenCapture((HWND)handle);
+}
+void SetOutputFile(CCaptureEnginePtr pipeLine, char * fileName)
+{
+	((CCapturePipeline*)pipeLine)->SetOutputFile(fileName);
+}
 void Start(CCaptureEnginePtr pipeLine)
 {
 	((CCapturePipeline*)pipeLine)->Start();

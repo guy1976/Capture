@@ -4,9 +4,10 @@
 #include <opencv2/highgui/highgui.hpp>
 #include "opencv2/imgproc/imgproc.hpp"
 #include "..\Kaltura.CaptureEngine.Common\Utils.h"
+#include "..\Kaltura.CaptureEngine.Common\CaptureEngineSamplesProcessor.h"
 #include <chrono>
 
-class CSceneDetector
+class CSceneDetector : public CCaptureEngineSamplesProcessor
 {
 	cv::Mat PrepareAnalysisImage(const cv::Mat& src);
 	cv::Mat Canny(const cv::Mat&);
@@ -21,6 +22,6 @@ public:
 	CSceneDetector();
 	~CSceneDetector();
 
-	void ProcessImage(CSample *pSample);
+	void ProcessSample(CCaptureEngineSample *pSample);
 };
 

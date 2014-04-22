@@ -4,9 +4,13 @@ typedef void * CCaptureEnginePtr;
 
 
 extern "C" __declspec(dllexport) CCaptureEnginePtr CreatePipeline();
-extern "C" __declspec(dllexport) void InitPipeline(CCaptureEnginePtr pipeLine, void* hScreen, char * videoInput, char* audioInput, char* fileoutput);
+extern "C" __declspec(dllexport) void AddAudioSource(CCaptureEnginePtr pipeLine, char * videoInput);
+extern "C" __declspec(dllexport) void AddCameraSource(CCaptureEnginePtr pipeLine, char * videoInput);
+extern "C" __declspec(dllexport) void AddScreenSource(CCaptureEnginePtr pipeLine, void * handle);
+extern "C" __declspec(dllexport) void SetOutputFile(CCaptureEnginePtr pipeLine, char * fileName);
 
 extern "C" __declspec(dllexport) void Start(CCaptureEnginePtr pipeLine);
 
 extern "C" __declspec(dllexport) void Stop(CCaptureEnginePtr pipeLine);
+
 
