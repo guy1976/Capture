@@ -10,30 +10,32 @@ CCapturePipeline::~CCapturePipeline()
 {
 }
 
-void CCapturePipeline::AddVideo(const std::string& videoInput)
+void CCapturePipeline::AddCameraSource(const std::string& videoInput)
 {
 	m_videoCapture = std::make_unique<CVideoCapture>();
-	m_videoCapture->Init(videoInput.c_str());
+	auto pCapture = ((CVideoCapture*)m_videoCapture.get());
+	pCapture->Init(videoInput.c_str());
 	auto context = m_videoCapture->GetAVCodecContext(0);
 	AddVideo(context);
 }
 
-void CCapturePipeline::AddAudio(const std::string& input)
+void CCapturePipeline::AddAudioSource(const std::string& input)
 {
 	m_audioCapture = std::make_unique<CAudioCapture>();
-	m_audioCapture->Init(input.c_str());
+	auto pCapture = ((CAudioCapture*)m_audioCapture.get());
+	pCapture->Init(input.c_str());
 	m_audioEncoder = std::make_unique<CAudioEncoder>(m_fileWriter);
 	m_audioEncoder->AddAudioStream(64);
 }
 
 
-void CCapturePipeline::AddScreenCapture(HWND hScreen)
+void CCapturePipeline::AddScreenSource(HWND hScreen)
 {
-	m_screenCapture = std::make_unique<CScreenCapture>();
+	m_videoCapture = std::make_unique<CScreenCapture>();
 	RECT ClientRect;
 	GetClientRect(hScreen, &ClientRect);
-	m_screenCapture->Init(hScreen, ClientRect);
-	auto context = m_screenCapture->GetAVCodecContext(0);
+	((CScreenCapture*)m_videoCapture.get())->Init(hScreen, ClientRect);
+	auto context = m_videoCapture->GetAVCodecContext(0);
 	AddVideo(context);
 }
 
@@ -57,8 +59,6 @@ void CCapturePipeline::Start()
 	if (m_videoCapture)
 		m_videoCapture->Start();
 
-	if (m_screenCapture)
-		m_screenCapture->Start();
 
 	if (m_audioCapture)
 		m_audioCapture->Start();
@@ -70,7 +70,7 @@ void CCapturePipeline::EncoderThread()
 	while (!m_bDone)
 	{
 		std::this_thread::sleep_for(std::chrono::microseconds(1));
-		CSample* pSample = m_screenCapture ? m_screenCapture->GetSample() : m_videoCapture->GetSample();
+		CSample* pSample = m_videoCapture->GetSample();
 
 		for (auto iter = m_processors.begin(); iter < m_processors.end();iter++)
 		{
@@ -83,8 +83,6 @@ void CCapturePipeline::EncoderThread()
 			m_videoEncoder->Encode(pSample->get());
 			auto t1 = clock();
 		//	printf("time to  encode video (%d)\n", t1 - t0);
-			///if (m_screenCapture)
-			//	m_sceneDetector->ProcessImage(pSample);
 			delete pSample;
 		}
 		CSample* pAudioSample = m_audioCapture ? m_audioCapture->GetSample() : NULL;
@@ -103,8 +101,6 @@ void CCapturePipeline::EncoderThread()
 
 void CCapturePipeline::Stop()
 {
-	if (m_screenCapture)
-		m_screenCapture->Stop();
 	if (m_videoCapture)
 		m_videoCapture->Stop();
 

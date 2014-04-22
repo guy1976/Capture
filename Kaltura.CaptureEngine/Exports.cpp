@@ -10,16 +10,16 @@ CCaptureEnginePtr CreatePipeline()
 
 void AddAudioSource(CCaptureEnginePtr pipeLine, char * inputName)
 {
-	((CCapturePipeline*)pipeLine)->AddAudio(inputName);
+	((CCapturePipeline*)pipeLine)->AddAudioSource(inputName);
 }
 
 void AddCameraSource(CCaptureEnginePtr pipeLine, char * inputName)
 {
-	((CCapturePipeline*)pipeLine)->AddVideo(inputName);
+	((CCapturePipeline*)pipeLine)->AddCameraSource(inputName);
 }
 void AddScreenSource(CCaptureEnginePtr pipeLine, void * handle)
 {
-	((CCapturePipeline*)pipeLine)->AddScreenCapture((HWND)handle);
+	((CCapturePipeline*)pipeLine)->AddScreenSource((HWND)handle);
 }
 void SetOutputFile(CCaptureEnginePtr pipeLine, char * fileName)
 {
