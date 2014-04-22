@@ -3,5 +3,9 @@
     <BitmapImage x:Key="CameraIcon" UriSource="./Images/Camera.png" />
     <BitmapImage x:Key="KalturaIcon" UriSource="./Images/Kaltura-Sun.png" />
     <BitmapImage x:Key="PowerPointIcon" UriSource="./Images/Logo_Microsoft_PowerPoint_2013.png" />
-
-</ResourceDictionary>
+    <BitmapImage x:Key="MicrophoneIcon" UriSource="./Images/microphone.png" />
+    <BitmapImage x:Key="LecturePreview" UriSource="./Images/LecturePreview.jpg" />
+    <BitmapImage x:Key="VUMmeter" UriSource="./Images/vumeter.gif" />
+    <BitmapImage x:Key="DesktopPreview" UriSource="./Images/Desktop.png" />
+    
+</ResourceDictionary> 

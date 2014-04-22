@@ -11,5 +11,9 @@ namespace Capture
     /// </summary>
     public partial class App : Application
     {
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            MainWindow.Close();
+        }
     }
 }
