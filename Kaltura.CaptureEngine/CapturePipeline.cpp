@@ -54,6 +54,10 @@ void CCapturePipeline::SetOutputFile(const std::string& fileName)
 
 void CCapturePipeline::Start()
 {
+	if (m_encoderThread)
+	{
+		return;
+	}
 	m_bDone = false;
 	m_encoderThread = std::make_unique<std::thread>(&CCapturePipeline::EncoderThread, this);
 	if (m_videoCapture)
@@ -70,20 +74,20 @@ void CCapturePipeline::EncoderThread()
 	while (!m_bDone)
 	{
 		std::this_thread::sleep_for(std::chrono::microseconds(1));
-		CSample* pSample = m_videoCapture->GetSample();
+		CSample* pVideoSample = m_videoCapture->GetSample();
 
-		for (auto iter = m_processors.begin(); iter < m_processors.end();iter++)
+		if (pVideoSample != NULL)
 		{
-			//aCCaptureEngineVideoSample videoSample;
-			//(*iter)->ProcessSample((CCaptureEngineSample*)&videoSample);
-		}
-		if (pSample != NULL)
-		{
+			for (auto iter = m_processors.begin(); iter < m_processors.end(); iter++)
+			{
+				CCaptureEngineVideoSample videoSample(pVideoSample->get()->width, pVideoSample->get()->height, pVideoSample->get()->linesize[0], pVideoSample->get()->format, pVideoSample->get()->data[0]);
+				(*iter)->ProcessSample((CCaptureEngineSample*)&videoSample);
+			}
 			auto t0 = clock();
-			m_videoEncoder->Encode(pSample->get());
+			m_videoEncoder->Encode(pVideoSample->get());
 			auto t1 = clock();
 		//	printf("time to  encode video (%d)\n", t1 - t0);
-			delete pSample;
+			delete pVideoSample;
 		}
 		CSample* pAudioSample = m_audioCapture ? m_audioCapture->GetSample() : NULL;
 		if (pAudioSample != NULL)
@@ -109,4 +113,5 @@ void CCapturePipeline::Stop()
 
 	m_bDone = true;
 	m_encoderThread->join();
+	m_encoderThread.release();
 }

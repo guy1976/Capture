@@ -16,6 +16,9 @@
     <Filter Include="Capture">
       <UniqueIdentifier>{151734f6-c3ca-43ed-a5c3-db71db959cfd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="FFMpegWrappers">
+      <UniqueIdentifier>{c216ae03-18ad-4873-8ca5-a075ce3cd332}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -28,18 +31,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include=".\CapturePipeline.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include=".\FFMpegWrappers\AudioEncoder.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include=".\FFMpegWrappers\FFMpegCommon.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include=".\FFMpegWrappers\FileWriter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include=".\FFMpegWrappers\VideoEncoder.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Capture\Capture.h">
@@ -56,6 +47,18 @@
     </ClInclude>
     <ClInclude Include="Exports.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include=".\FFMpegWrappers\FFMpegCommon.h">
+      <Filter>FFMpegWrappers</Filter>
+    </ClInclude>
+    <ClInclude Include=".\FFMpegWrappers\FileWriter.h">
+      <Filter>FFMpegWrappers</Filter>
+    </ClInclude>
+    <ClInclude Include=".\FFMpegWrappers\VideoEncoder.h">
+      <Filter>FFMpegWrappers</Filter>
+    </ClInclude>
+    <ClInclude Include=".\FFMpegWrappers\AudioEncoder.h">
+      <Filter>FFMpegWrappers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -74,18 +77,6 @@
     <ClCompile Include=".\EnumDevices.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include=".\FFMpegWrappers\AudioEncoder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include=".\FFMpegWrappers\FFMpegCommon.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include=".\FFMpegWrappers\FileWriter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include=".\FFMpegWrappers\VideoEncoder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Capture\Capture.cpp">
       <Filter>Capture</Filter>
     </ClCompile>
@@ -100,6 +91,18 @@
     </ClCompile>
     <ClCompile Include="Exports.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include=".\FFMpegWrappers\AudioEncoder.cpp">
+      <Filter>FFMpegWrappers</Filter>
+    </ClCompile>
+    <ClCompile Include=".\FFMpegWrappers\FFMpegCommon.cpp">
+      <Filter>FFMpegWrappers</Filter>
+    </ClCompile>
+    <ClCompile Include=".\FFMpegWrappers\FileWriter.cpp">
+      <Filter>FFMpegWrappers</Filter>
+    </ClCompile>
+    <ClCompile Include=".\FFMpegWrappers\VideoEncoder.cpp">
+      <Filter>FFMpegWrappers</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

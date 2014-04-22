@@ -16,7 +16,7 @@ class DLL_DECL CCaptureEngineVideoSample
 	unsigned char *m_pBuffer;
 	int m_pixelFormat;
 public:
-	CCaptureEngineVideoSample();
+	CCaptureEngineVideoSample(int width,int height,int stride,int pixelFormat,unsigned char* buffer);
 	virtual ~CCaptureEngineVideoSample();
 
 

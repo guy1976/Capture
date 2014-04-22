@@ -41,6 +41,12 @@
 char* window_name = "Edge Map";
 char* window_name2 = "Edge Map2";
 
+
+extern "C" __declspec(dllexport) CCaptureEngineSamplesProcessor* CreateSceneDetector()
+{
+	return new CSceneDetector();
+}
+
 CSceneDetector::CSceneDetector() : m_index(0)
 {
 
@@ -71,7 +77,7 @@ void CSceneDetector::ProcessSample(CCaptureEngineSample *pSample)
 
 	cv::namedWindow(window_name, CV_WINDOW_AUTOSIZE);
 	auto t0 = clock();
-	cv::Mat original(pVideoSample->GetHeight(), pVideoSample->GetWidth(), CV_8UC4, pVideoSample->GetStride());
+	cv::Mat original(pVideoSample->GetHeight(), pVideoSample->GetWidth(), CV_8UC4, pVideoSample->GetBuffer());
 	cv::Mat currentImage = PrepareAnalysisImage(original);
 	cv::Mat canny = Canny(currentImage);
 

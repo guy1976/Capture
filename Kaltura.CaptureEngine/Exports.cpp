@@ -35,3 +35,8 @@ void Stop(CCaptureEnginePtr pipeLine)
 
 	((CCapturePipeline*)pipeLine)->Stop();
 }
+void AddProcessor(CCaptureEnginePtr pipeLine, CCaptureEngineSamplesProcessor* pProcessor)
+{
+
+	((CCapturePipeline*)pipeLine)->AddProcessor(pProcessor);
+}

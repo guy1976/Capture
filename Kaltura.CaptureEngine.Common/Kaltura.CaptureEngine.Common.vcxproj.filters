@@ -53,5 +53,8 @@
     <ClCompile Include="CaptureEngineSample.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CaptureEngineSamplesProcessor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

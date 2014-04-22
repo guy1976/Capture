@@ -8,7 +8,10 @@
 
 
 #pragma comment(lib,"..\\Debug\\Kaltura.CaptureEngine.lib")
+#pragma comment(lib,"..\\Debug\\Kaptura.VideoSegmentation.lib")
 
+
+extern "C" __declspec(dllimport) CCaptureEngineSamplesProcessor* CreateSceneDetector();
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -19,12 +22,16 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	HWND hWnd = GetDesktopWindow();
 
+	auto sceneDetector = CreateSceneDetector();
+
 	{
 		auto pipeline1 = CreatePipeline();
 
 
+
 		SetOutputFile(pipeline1, "c:\\screen.mp4");
 		AddScreenSource(pipeline1, hWnd);
+		AddProcessor(pipeline1, sceneDetector);
 
 		auto pipeline2 = CreatePipeline();
 		SetOutputFile(pipeline2, "c:\\cam.mp4");

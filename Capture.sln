@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.30110.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Capture", "Capture\Capture.csproj", "{CF821460-3ABF-4128-BAD5-872E6AF7F6FB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kaltura.CaptureAgent", "Capture\Kaltura.CaptureAgent.csproj", "{CF821460-3ABF-4128-BAD5-872E6AF7F6FB}"
 	ProjectSection(ProjectDependencies) = postProject
 		{B6D7AF9A-4DAF-40DF-A22F-32EFF9B9FB9E} = {B6D7AF9A-4DAF-40DF-A22F-32EFF9B9FB9E}
 		{F4282DAC-9924-4D8A-8C60-9700DF95469D} = {F4282DAC-9924-4D8A-8C60-9700DF95469D}
@@ -23,6 +23,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Kaltura.CaptureEngine", "Ka
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Kaltura.CaptureEngine.Test", "Kaltura.CaptureEngine.Test\Kaltura.CaptureEngine.Test.vcxproj", "{16091B65-2FFA-43AA-82FE-B804B1F9BD80}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F4282DAC-9924-4D8A-8C60-9700DF95469D} = {F4282DAC-9924-4D8A-8C60-9700DF95469D}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,6 +52,7 @@ Global
 		{CF821460-3ABF-4128-BAD5-872E6AF7F6FB}.Release|x64.ActiveCfg = Release|Any CPU
 		{F4282DAC-9924-4D8A-8C60-9700DF95469D}.Debug|Any CPU.ActiveCfg = Debug|Win32
 		{F4282DAC-9924-4D8A-8C60-9700DF95469D}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{F4282DAC-9924-4D8A-8C60-9700DF95469D}.Debug|Mixed Platforms.Build.0 = Debug|Win32
 		{F4282DAC-9924-4D8A-8C60-9700DF95469D}.Debug|Win32.ActiveCfg = Debug|Win32
 		{F4282DAC-9924-4D8A-8C60-9700DF95469D}.Debug|Win32.Build.0 = Debug|Win32
 		{F4282DAC-9924-4D8A-8C60-9700DF95469D}.Debug|x64.ActiveCfg = Debug|Win32

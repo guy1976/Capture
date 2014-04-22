@@ -4,8 +4,10 @@
 #include <opencv2/highgui/highgui.hpp>
 #include "opencv2/imgproc/imgproc.hpp"
 #include "..\Kaltura.CaptureEngine.Common\Utils.h"
+#include "..\Kaltura.CaptureEngine.Common\Common.h"
 #include "..\Kaltura.CaptureEngine.Common\CaptureEngineSamplesProcessor.h"
 #include <chrono>
+
 
 class CSceneDetector : public CCaptureEngineSamplesProcessor
 {
@@ -24,4 +26,3 @@ public:
 
 	void ProcessSample(CCaptureEngineSample *pSample);
 };
-
