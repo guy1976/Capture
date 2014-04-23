@@ -7,17 +7,17 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid >
         <Grid.RowDefinitions>
-            <RowDefinition Height="35"/>
+            <RowDefinition Height="55"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <TextBlock Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" Height="64" FontSize="45"  Width="174" Grid.ColumnSpan="2" ><Run Text="0:00:00"/></TextBlock>
-        <StackPanel Grid.Row="1" Orientation="Horizontal"  HorizontalAlignment="Center">
+        <TextBlock Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" Height="64" FontSize="45"><Run Text="{Binding RecordingTime,StringFormat=hh\\:mm\\:ss}"/></TextBlock>
+       <StackPanel Grid.Row="1" Orientation="Horizontal"  HorizontalAlignment="Center">
             <Button Style="{DynamicResource MetroCircleButtonStyle}" VerticalAlignment="Center" Height="64"  Width="64">
                 <Grid>
                     <Ellipse Width="30" Height="30" Fill="Red"/>
                 </Grid>
             </Button>
-            <Button Style="{DynamicResource MetroCircleButtonStyle}"  VerticalAlignment="Center" Height="64" Width="64" Grid.Column="1">
+            <Button Style="{DynamicResource MetroCircleButtonStyle}"  VerticalAlignment="Center" Height="64" Width="64" Grid.Column="1" Command="{Binding StopRecordingCommand}">
                 <Rectangle Width="25" Height="25" Fill="Black"/>
             </Button>
         </StackPanel>

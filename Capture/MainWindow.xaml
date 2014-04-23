@@ -10,7 +10,7 @@
         ShowCloseButton="True"
         ShowMinButton="True"
         ShowInTaskbar="False"
-        Title="Kaltua capture" Width="600" Height="317" ResizeMode="CanMinimize"   Icon="Images/Kaltura-Sun.png" MouseDown="Window_MouseDown">
+        Title="Kaltua capture" Width="600" Height="320" ResizeMode="CanMinimize"   Icon="Images/Kaltura-Sun.png" MouseDown="Window_MouseDown">
     <i:Interaction.Behaviors>
         <behaviours:BorderlessWindowBehavior AllowsTransparency="False"
                                          EnableDWMDropShadow="True" />
@@ -38,6 +38,10 @@
             <MenuItem Header="Log out"></MenuItem>
             <MenuItem Header="Account info"></MenuItem>
         </ContextMenu>
+
+        <local:BooleanConverter  x:Key="ReverseBool" True="False" False="True" />
+        <local:BooleanToVisibilityConverter x:Key="BoolToVis" True="Visible" False="Hidden" />
+        <local:BooleanToVisibilityConverter x:Key="RevBoolToVis"  True="Hidden" False="Visible"/>
     </controls:MetroWindow.Resources>
     <controls:MetroWindow.Triggers>
         <EventTrigger RoutedEvent="Window.Loaded">
@@ -46,7 +50,7 @@
     </controls:MetroWindow.Triggers>
     <controls:MetroWindow.Flyouts>
         <controls:FlyoutsControl>
-            <controls:Flyout Header="Available Inputs" Position="Top" IsOpen="True" x:Name="AvailableInputsPopup">
+            <controls:Flyout Header="Available Inputs" Position="Top" IsOpen="False" x:Name="AvailableInputsPopup">
 
                 <!-- Your custom content here -->
             </controls:Flyout>
@@ -83,9 +87,16 @@
                         <Image Source="{DynamicResource MicrophoneIcon}" Width="32"  Height="32"   />
                     </ToggleButton>
                 </StackPanel>
-                <Grid Grid.Row="1" Margin="5" >
-                    <local:CaptureTypeControl Visibility="Hidden"/>
-                    <local:CaptureProgressControl Visibility="Visible" />
+                <Grid Grid.Row="1" >
+                    <TabControl>
+                        <TabItem IsSelected="{Binding IsRecording,Converter={StaticResource ReverseBool}}">
+                            <local:CaptureTypeControl   />
+                        </TabItem>
+
+                        <TabItem IsSelected="{Binding IsRecording}">
+                            <local:CaptureProgressControl />
+                        </TabItem>
+                    </TabControl>
                 </Grid>
             </Grid>
 
