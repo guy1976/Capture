@@ -21,6 +21,7 @@ namespace Capture
     public partial class MainWindow : MetroWindow
     {
         NotifyIcon m_notifyIcon;
+        ViewModel m_viewModel = new ViewModel();
 
         public MainWindow()
         {
@@ -29,6 +30,8 @@ namespace Capture
             m_notifyIcon.Icon = new System.Drawing.Icon(@"D:\Dev\Capture\Capture\Images\Kaltura-Sun.ico");
             m_notifyIcon.Visible = true;
             m_notifyIcon.Click += m_notifyIcon_Click;
+            DataContext = m_viewModel;
+
         }
 
         void m_notifyIcon_Click(object sender, EventArgs e)

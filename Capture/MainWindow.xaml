@@ -10,7 +10,7 @@
         ShowCloseButton="True"
         ShowMinButton="True"
         ShowInTaskbar="False"
-        Title="Kaltua capture" Width="600" Height="190" ResizeMode="CanMinimize"   Icon="Images/Kaltura-Sun.png" MouseDown="Window_MouseDown">
+        Title="Kaltua capture" Width="600" Height="317" ResizeMode="CanMinimize"   Icon="Images/Kaltura-Sun.png" MouseDown="Window_MouseDown">
     <i:Interaction.Behaviors>
         <behaviours:BorderlessWindowBehavior AllowsTransparency="False"
                                          EnableDWMDropShadow="True" />
@@ -56,11 +56,11 @@
     <TabControl>
         <TabItem Header="Capture">
             <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="325"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <StackPanel Orientation="Horizontal"   Margin="5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="100"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center"   Margin="5">
                     <ToggleButton  Width="64"  Height="84" Margin="0,0,5,0" ToolTip="Capture PowerPoint presentation"  ContextMenu="{StaticResource Options1}">
                         <Grid>
                             <Grid.RowDefinitions>
@@ -83,54 +83,27 @@
                         <Image Source="{DynamicResource MicrophoneIcon}" Width="32"  Height="32"   />
                     </ToggleButton>
                 </StackPanel>
-                <Grid Grid.Column="1" Margin="5" >
-                    <Grid Visibility="Hidden">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="35"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
-                        <TextBlock Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" Height="64" FontSize="45"  Width="174" Grid.ColumnSpan="2" ><Run Text="0:00:00"/></TextBlock>
-                        <StackPanel Grid.Row="1" Orientation="Horizontal" >
-                        <Button Style="{DynamicResource MetroCircleButtonStyle}" VerticalAlignment="Center" Height="64"  Width="64">
-                            <Grid>
-                                <Ellipse Width="30" Height="30" Fill="Red"/>
-                            </Grid>
-                        </Button>
-                        <Button Style="{DynamicResource MetroCircleButtonStyle}"  VerticalAlignment="Center" Height="64" Width="64" Grid.Column="1" Click="Button_Click_3">
-                            <Rectangle Width="25" Height="25" Fill="Black"/>
-                            </Button>
-                        </StackPanel>
-                    </Grid>
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="50"/>
-                            <RowDefinition Height="5"/>
-                            <RowDefinition Height="50"/>
-                        </Grid.RowDefinitions>
-                       <StackPanel Grid.Row="0" Orientation="Horizontal" >
-                            <Button   VerticalAlignment="Center" Height="50" Width="250" >
-                                <Grid>
-                                    <Ellipse Width="25" Height="25" HorizontalAlignment="Left"  Fill="Red"/>
-                                    <TextBlock  Margin="55,0,5,0" FontSize="26" FontWeight="Normal" VerticalAlignment="Center" >Start recording</TextBlock>
-                                </Grid>
-                            </Button>
-                        </StackPanel>
-                        <StackPanel Grid.Row="2" Orientation="Horizontal" >
-
-                            <Button    VerticalAlignment="Center" Height="50" Width="250" Grid.Column="1" Click="Button_Click_3">
-                                <Grid>
-                                    <Rectangle Width="15" Height="15" HorizontalAlignment="Left" Fill="Black"/>
-                                    <TextBlock Margin="55,0,5,0" FontSize="26" VerticalAlignment="Center"  FontWeight="Normal">Start broadcast</TextBlock>
-                                </Grid>
-                            </Button>
-                        </StackPanel>
-                    </Grid>
+                <Grid Grid.Row="1" Margin="5" >
+                    <local:CaptureTypeControl Visibility="Hidden"/>
+                    <local:CaptureProgressControl Visibility="Visible" />
                 </Grid>
             </Grid>
 
         </TabItem>
         <TabItem Header="Recordings">
         </TabItem>
+        <ListView Margin="10,10,13,11" ScrollViewer.VerticalScrollBarVisibility="Visible" >
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="#" Width="30"/>
+                    <GridViewColumn Header="Time" Width="200"/>
+                    <GridViewColumn Header="Progress" Width="300"/>
+                </GridView>                
+            </ListView.View>
+            <ListViewItem>
+                abc
+            </ListViewItem>            
+        </ListView>
     </TabControl>
 
 
