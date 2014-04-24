@@ -93,7 +93,7 @@ void CVideoEncoder::Encode(AVFrame* inputFrame)
 		auto size = pkt.size;
 		int val = av_write_frame(pContext, &pkt);
 		//int val = av_interleaved_write_frame(pContext, &pkt);
-		printf("H264 wrote %d bytes (%d)\n", size, val);
+		//printf("H264 wrote %d bytes (%d)\n", size, val);
 		//fwrite(pkt.data, 1, pkt.size, m_fileName.get());
 	}
 	av_free_packet(&pkt);

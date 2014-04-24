@@ -56,15 +56,16 @@ void AddProcessor(CCaptureEnginePtr pipeLine, CCaptureEngineSamplesProcessor* pP
 	((CCapturePipeline*)pipeLine)->AddProcessor(pProcessor);
 }
 
-
-void Preview(CaptureDevice* device)
+void SetPreview(CCaptureEnginePtr pipeLine )
 {
+	auto pipeline = ((CCapturePipeline*)pipeLine);
+	((CCapturePipeline*)pipeLine)->ShowPreview();
 }
 
 void EnumDevices(CaptureDevice devices[32])
 {
 	memset(devices, 0, sizeof(CaptureDevice[32]));
-//	CoInitialize(NULL);
+	CoInitialize(NULL);
 	std::vector<std::wstring> devicesName;
 	CEnumDevices a;
 	a.EnumInputs(true, devicesName);
@@ -94,5 +95,5 @@ void EnumDevices(CaptureDevice devices[32])
 		auto s = vidDevice.substr(0, 32);
 		wcsncpy(device.FFMpegInput, (std::wstring(L"audio=") + s).c_str(),100);
 	}
-//	CoUninitialize();
+	CoUninitialize();
 }

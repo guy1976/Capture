@@ -38,10 +38,12 @@ AVFrame* CreateAudioFrame(uint8_t *pBuffer, int bufferSize)
 
 AVFrame* CreateVideoFrame(uint8_t*pBuffer, int width, int height, int stride, AVPixelFormat pix_fmt,bool copy)
 {
+
 	auto frame = av_frame_alloc();
 	frame->width = width;
 	frame->height = height;
 	frame->format = pix_fmt;
+
 	if (copy)
 	{
 		frame->data[0] = pBuffer;

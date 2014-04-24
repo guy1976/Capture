@@ -65,19 +65,12 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center"   Margin="5">
-                    <ToggleButton  Width="64"  Height="84" Margin="0,0,5,0" ToolTip="Capture PowerPoint presentation"  ContextMenu="{StaticResource Options1}">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="64"></RowDefinition>
-                                <RowDefinition Height="20"></RowDefinition>
-                            </Grid.RowDefinitions>
-                            <Rectangle Grid.Row="0" Width="32"  Height="32" Fill="Black">
+                    <ToggleButton  Width="64"  Height="64" Margin="0,0,5,0" ToolTip="Capture PowerPoint presentation"  ContextMenu="{StaticResource Options1}">
+                         <Rectangle Grid.Row="0" Width="32"  Height="32" Fill="Black">
                                 <Rectangle.OpacityMask>
                                     <VisualBrush Visual="{StaticResource appbar_office_powerpoint}" Stretch="Fill" />
                                 </Rectangle.OpacityMask>
                             </Rectangle>
-                            <Button Grid.Row="1" Click="Button_Click_4" >aa</Button>
-                        </Grid>
                     </ToggleButton>
 
                     <ToggleButton  Width="64" Height="64"  Margin="0,0,5,0" ToolTip="Capture camera" >
@@ -102,8 +95,7 @@
 
         </TabItem>
         <TabItem Header="Recordings">
-        </TabItem>
-        <ListView Margin="10,10,13,11" ScrollViewer.VerticalScrollBarVisibility="Visible" >
+            <ListView Margin="10,10,13,11" ScrollViewer.VerticalScrollBarVisibility="Visible" >
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="#" Width="30"/>
@@ -113,8 +105,9 @@
             </ListView.View>
             <ListViewItem>
                 abc
-            </ListViewItem>            
-        </ListView>
+            </ListViewItem>
+            </ListView>
+        </TabItem>
     </TabControl>
 
 

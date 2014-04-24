@@ -52,12 +52,12 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;KALTURACAPTUREENGINE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\..\ThirdParty\ffmpeg\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\ThirdParty\ffmpeg\include;..\..\ThirdParty\SDL2-2.0.3\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\..\ThirdParty\ffmpeg\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\ThirdParty\ffmpeg\lib;..\..\ThirdParty\SDL2-2.0.3\lib\x86</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -69,14 +69,14 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;KALTURACAPTUREENGINE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\..\ThirdParty\ffmpeg\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\ThirdParty\ffmpeg\include;..\..\ThirdParty\SDL2-2.0.3\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>..\..\ThirdParty\ffmpeg\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\ThirdParty\ffmpeg\lib;..\..\ThirdParty\SDL2-2.0.3\lib\x86</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

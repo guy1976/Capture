@@ -32,12 +32,14 @@ int _tmain(int argc, _TCHAR* argv[])
 
 		SetOutputFile(pipeline1, "c:\\screen.mp4");
 		AddScreenSource(pipeline1, hWnd);
-		AddProcessor(pipeline1, sceneDetector);
+		//AddProcessor(pipeline1, sceneDetector);
 
+		
 		auto pipeline2 = CreatePipeline();
 		SetOutputFile(pipeline2, "c:\\cam.mp4");
-		//AddCameraSource(pipeline2, devices[1].FFMpegInput);
-	//	AddAudioSource(pipeline2, devices[2].FFMpegInput);
+		AddSource(pipeline2, &devices[1]);
+		AddSource(pipeline2, &devices[2]);
+		SetPreview(pipeline2);
 		Start(pipeline1);
 		Start(pipeline2);
 		while (!_kbhit())

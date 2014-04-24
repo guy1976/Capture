@@ -1,7 +1,9 @@
 #include "stdafx.h"
 #include "CapturePipeline.h"
 
-CCapturePipeline::CCapturePipeline()
+#pragma comment(lib,"SDL2.lib")
+
+CCapturePipeline::CCapturePipeline() : m_sdlWindow(NULL), m_sdlRenderer(NULL), m_sdlTexture(NULL)
 {
 }
 
@@ -51,7 +53,6 @@ void CCapturePipeline::SetOutputFile(const std::string& fileName)
 	m_fileWriter->InitFile(fileName.c_str());
 }
 
-
 void CCapturePipeline::Start()
 {
 	if (m_encoderThread)
@@ -65,16 +66,39 @@ void CCapturePipeline::Start()
 
 
 	if (m_audioCapture)
-		m_audioCapture->Start();
+		m_audioCapture->Start(); 
+
+
+	
+
+
 }
 
+void CCapturePipeline::ShowPreview()
+{
+	if (m_sdlWindow == NULL)
+	{
+		SDL_Init(SDL_INIT_EVERYTHING);
+
+		m_sdlWindow = SDL_CreateWindow("SDL", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 640, 480, SDL_WINDOW_BORDERLESS);
+		m_sdlRenderer = SDL_CreateRenderer(m_sdlWindow, -1, 0);
+		SDL_RendererInfo info;
+		SDL_GetRendererInfo(m_sdlRenderer, &info); 
+
+	}
+	m_bPreview = true;
+}
+
+void CCapturePipeline::ClosePreview()
+{
+}
 void CCapturePipeline::EncoderThread()
 {
 	m_fileWriter->Start();
 	while (!m_bDone)
 	{
 		std::this_thread::sleep_for(std::chrono::microseconds(1));
-		CSample* pVideoSample = m_videoCapture->GetSample();
+		CSample* pVideoSample = m_videoCapture ? m_videoCapture->GetSample() : NULL;
 
 		if (pVideoSample != NULL)
 		{
@@ -86,6 +110,51 @@ void CCapturePipeline::EncoderThread()
 			auto t0 = clock();
 			m_videoEncoder->Encode(pVideoSample->get());
 			auto t1 = clock();
+
+			if (m_bPreview)
+			{
+				if (m_sdlTexture == NULL)
+				{
+					int pixFormat = pVideoSample->get()->format;
+					Uint32 sdlFormat = SDL_PIXELFORMAT_RGB888;
+					
+					if (PIX_FMT_RGB24 == pixFormat)
+					{
+						sdlFormat = SDL_PIXELFORMAT_RGB888;
+					}
+					if (PIX_FMT_BGR24 == pixFormat)
+					{
+						sdlFormat = SDL_PIXELFORMAT_BGR24;
+					}
+					if (PIX_FMT_RGB32 == pixFormat)
+					{
+						sdlFormat = SDL_PIXELFORMAT_ARGB8888;
+					}
+					if (PIX_FMT_YUYV422 == pixFormat)
+					{
+						sdlFormat = SDL_PIXELFORMAT_YV12;
+					}
+					m_sdlTexture = SDL_CreateTexture(m_sdlRenderer,
+						sdlFormat,
+						SDL_TEXTUREACCESS_STATIC,
+						pVideoSample->get()->width, pVideoSample->get()->height);
+				}
+				auto t0 = clock();
+				
+				SDL_UpdateTexture(m_sdlTexture, NULL, pVideoSample->get()->data[0], pVideoSample->get()->linesize[0]);
+				SDL_RenderClear(m_sdlRenderer);
+				SDL_RenderCopy(m_sdlRenderer, m_sdlTexture, NULL, NULL);
+				SDL_RenderPresent(m_sdlRenderer);
+				
+				SDL_Event e;
+				while (SDL_PollEvent(&e))
+				{
+				}
+				auto t1 = clock();
+				printf("Time to render frame (%d)\n", t1-t0);
+			}
+
+
 		//	printf("time to  encode video (%d)\n", t1 - t0);
 			delete pVideoSample;
 		}

@@ -14,6 +14,10 @@
 
 class CCapturePipeline
 {
+	SDL_Window*  m_sdlWindow;
+	SDL_Renderer* m_sdlRenderer;
+	SDL_Texture * m_sdlTexture;
+
 	std::shared_ptr<CFileWriter>  m_fileWriter;
 	std::unique_ptr<CVideoEncoder> m_videoEncoder;
 	std::unique_ptr<CAudioEncoder> m_audioEncoder;
@@ -23,9 +27,10 @@ class CCapturePipeline
 	std::unique_ptr<std::thread> m_processorThread;
 
 	std::vector<CCaptureEngineSamplesProcessor*> m_processors;
-	bool m_bDone;
+	bool m_bDone,m_bPreview;
 	void EncoderThread();
 	void AddVideo(AVCodecContext* context);
+	void ClosePreview();
 public:
 	CCapturePipeline();
 	virtual ~CCapturePipeline();
@@ -35,6 +40,7 @@ public:
 	void AddScreenSource(HWND hScreen);
 	void SetOutputFile(const std::string& fileName);
 	void AddProcessor(CCaptureEngineSamplesProcessor* pProcessor) { m_processors.push_back(pProcessor); }
+	void ShowPreview();
 	void Start();
 	void Stop();
 };

@@ -4,8 +4,6 @@
 
 
 
-
-
 CCapture::CCapture()
 {
 }
@@ -15,11 +13,6 @@ CCapture::CCapture()
 CCapture::~CCapture()
 {
 }
-CSample* CCapture::Preview()
-{
-	CSample* pSample = Capture();
-	return pSample;
-}
 
 void CCapture::CaptureThread()
 {
@@ -28,8 +21,16 @@ void CCapture::CaptureThread()
 		CSample* pSample = Capture();
 		{
 			std::lock_guard<std::mutex> lock(m_samplesMutex);
-			m_samples.push_back(pSample);
-			cond_var.notify_one();
+			if (m_samples.size() < 5)
+			{
+				m_samples.push_back(pSample);
+				cond_var.notify_one();
+			}
+			else
+			{
+				printf("Skipping frame!");
+				delete pSample;
+			}
 		}
 
 	}
@@ -71,7 +72,6 @@ int CFFCapture::TotalStreams()
 	}
 
 }
-
 AVCodecContext* CFFCapture::GetAVCodecContext(int index)
 {
 	if (m_avFormatContext)
@@ -94,9 +94,14 @@ void CFFCapture::Init(const std::string& device)
 		error = 0;
 	}	
 	
+	auto codecCtx=formatContext->streams[0]->codec;
+	auto codec = avcodec_find_decoder(codecCtx->codec_id);
 
-	//avformat_open_input(&formatC, "audio=Microphone (Microsoft LifeCam V", m_inputDevice.get(), NULL);
 
+	if (avcodec_open2(codecCtx, codec, NULL) < 0)
+	{
+
+	}
 }
 
 int frame = 0;
@@ -108,20 +113,29 @@ AVFrame* CFFCapture::ReadPacket()
 	av_init_packet(&pkt);
 	pkt.data = NULL;    // packet data will be allocated by the encoder
 	pkt.size = 0;
+	auto codecCtx = m_avFormatContext->streams[0]->codec;
+	int frameFinished;
 	if (0 == av_read_frame(m_avFormatContext.get(), &pkt))
 	{
+		
+
 		int index = pkt.stream_index;
 		auto avStream = m_avFormatContext->streams[index];
 		auto codec = avStream->codec;
 		if (codec->codec_type == AVMEDIA_TYPE_AUDIO)
 		{
 			sample = ::CreateAudioFrame(pkt.data, pkt.size);
+			//avcodec_decode_audio4(codecCtx, sample, &frameFinished, &pkt);
 			sample->pts = pkt.pts;
 		}
 		if (codec->codec_type == AVMEDIA_TYPE_VIDEO)
 		{
-			sample = ::CreateVideoFrame(pkt.data, codec->width,codec->height,codec->width*3,codec->pix_fmt,false);
-			memcpy(sample->data[0], pkt.data, pkt.size);
+			sample = av_frame_alloc();
+			avcodec_decode_video2(codecCtx, sample, &frameFinished, &pkt);
+			if (frameFinished != 1)
+			{
+				_ASSERT(false);
+			}
 			sample->pts = frame++;
 		}
 	}

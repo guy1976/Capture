@@ -42,6 +42,8 @@ namespace Kaltura.CaptureEngine
         private static extern void Start(IntPtr pipeLine);
         [DllImport(@"Kaltura.CaptureEngine.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern void Stop(IntPtr pipeLine);
+        [DllImport(@"Kaltura.CaptureEngine.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void GetPreview(out int width,out int stride,out int height,out IntPtr data);
         private IntPtr m_pipeLine;
 
         public static List<CaptureDevice> GetDevices()

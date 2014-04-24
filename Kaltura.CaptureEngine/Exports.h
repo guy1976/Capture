@@ -13,4 +13,4 @@ extern "C" __declspec(dllexport) void Start(CCaptureEnginePtr pipeLine);
 
 extern "C" __declspec(dllexport) void Stop(CCaptureEnginePtr pipeLine);
 extern "C" __declspec(dllexport) void EnumDevices(CaptureDevice devices[32]);
-extern "C" __declspec(dllexport) void Preview(CaptureDevice* device);
+extern "C" __declspec(dllexport) void SetPreview(CCaptureEnginePtr pipeLine);

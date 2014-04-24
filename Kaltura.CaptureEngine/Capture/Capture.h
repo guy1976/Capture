@@ -21,7 +21,6 @@ protected:
 	virtual CSample* Capture()=0;
 
 public:
-	CSample* Preview();
 	virtual int TotalStreams() = 0;
 	virtual AVCodecContext* GetAVCodecContext(int index) = 0;
 	CCapture();
