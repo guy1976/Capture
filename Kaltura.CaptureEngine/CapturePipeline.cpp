@@ -3,7 +3,7 @@
 
 #pragma comment(lib,"SDL2.lib")
 
-CCapturePipeline::CCapturePipeline() : m_sdlWindow(NULL), m_sdlRenderer(NULL), m_sdlTexture(NULL), m_pAudioCapture(NULL), m_pVideoCapture(NULL)
+CCapturePipeline::CCapturePipeline() : m_pAudioCapture(NULL), m_pVideoCapture(NULL)
 {
 }
 
@@ -55,97 +55,39 @@ void CCapturePipeline::Start()
 
 }
 
-void CCapturePipeline::ShowPreview()
-{
-	if (m_sdlWindow == NULL)
-	{
-		SDL_Init(SDL_INIT_EVERYTHING);
-
-		SDL_CreateWindowAndRenderer(640, 480, SDL_WINDOW_BORDERLESS, &m_sdlWindow, &m_sdlRenderer);
-		SDL_RendererInfo info;
-		SDL_GetRendererInfo(m_sdlRenderer, &info); 
-
-	}
-	SDL_Event e;
-	while (SDL_PollEvent(&e))
-	{
-	}
-	m_bPreview = true;
-}
-
-void CCapturePipeline::HidePreview()
-{
-}
 void CCapturePipeline::EncoderThread()
 {
 	m_fileWriter->Start();
 	while (!m_bDone)
 	{
 		std::this_thread::sleep_for(std::chrono::microseconds(1));
-		CSample* pVideoSample = m_pVideoCapture != NULL ? m_pVideoCapture->GetSample() : NULL;
+		std::shared_ptr<CSample> videoSample = m_pVideoCapture != NULL ? m_pVideoCapture->GetSample() : nullptr;
 
-		if (pVideoSample != NULL)
+		if (videoSample)
 		{
 			for (auto iter = m_processors.begin(); iter < m_processors.end(); iter++)
 			{
-				CCaptureEngineVideoSample videoSample(pVideoSample->get()->width, pVideoSample->get()->height, pVideoSample->get()->linesize[0], pVideoSample->get()->format, pVideoSample->get()->data[0]);
+				CCaptureEngineVideoSample videoSample(videoSample->get()->width, videoSample->get()->height, videoSample->get()->linesize[0], videoSample->get()->format, videoSample->get()->data[0]);
 				(*iter)->ProcessSample((CCaptureEngineSample*)&videoSample);
 			}
 			auto t0 = clock();
-			m_videoEncoder->Encode(pVideoSample->get());
+			m_videoEncoder->Encode(videoSample->get());
 			auto t1 = clock();
 
-			if (m_bPreview)
-			{
-				if (m_sdlTexture == NULL)
-				{
-					int pixFormat = pVideoSample->get()->format;
-					Uint32 sdlFormat = SDL_PIXELFORMAT_RGB888;
-					
-					if (PIX_FMT_RGB24 == pixFormat)
-					{
-						sdlFormat = SDL_PIXELFORMAT_RGB888;
-					}
-					if (PIX_FMT_BGR24 == pixFormat)
-					{
-						sdlFormat = SDL_PIXELFORMAT_BGR24;
-					}
-					if (PIX_FMT_RGB32 == pixFormat)
-					{
-						sdlFormat = SDL_PIXELFORMAT_ARGB8888;
-					}
-					if (PIX_FMT_YUYV422 == pixFormat)
-					{
-						sdlFormat = SDL_PIXELFORMAT_YV12;
-					}
-					m_sdlTexture = SDL_CreateTexture(m_sdlRenderer,
-						sdlFormat,
-						SDL_TEXTUREACCESS_STATIC,
-						pVideoSample->get()->width, pVideoSample->get()->height);
-				}
-				auto t0 = clock();
-				
-				SDL_UpdateTexture(m_sdlTexture, NULL, pVideoSample->get()->data[0], pVideoSample->get()->linesize[0]);
-				SDL_RenderClear(m_sdlRenderer);
-				SDL_RenderCopy(m_sdlRenderer, m_sdlTexture, NULL, NULL);
-				SDL_RenderPresent(m_sdlRenderer);
-				
-				auto t1 = clock();
-				printf("Time to render frame (%d)\n", t1-t0);
-			}
-
+			
 
 		//	printf("time to  encode video (%d)\n", t1 - t0);
-			delete pVideoSample;
 		}
-		CSample* pAudioSample = m_pAudioCapture != NULL ? m_pAudioCapture->GetSample() : NULL;
-		if (pAudioSample != NULL)
+		
+		
+		std::shared_ptr<CSample> audioample = m_pAudioCapture != NULL ? m_pAudioCapture->GetSample() : nullptr;
+
+		if (audioample)
 		{
 			auto t0 = clock();
-			m_audioEncoder->Encode(pAudioSample->get());
+			m_audioEncoder->Encode(audioample->get());
 			auto t1 = clock();
 		//	printf("time to  encode audio (%d)\n", t1 - t0);
-			delete pAudioSample;
 		}
 
 	}

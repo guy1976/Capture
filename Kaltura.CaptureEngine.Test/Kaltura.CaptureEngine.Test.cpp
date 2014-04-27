@@ -49,7 +49,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		Start(pipeline2);
 		while (!_kbhit())
 		{
-			//BSetPreview(pipeline2);
+			ShowPreviewWindow(camDevice);
 			Sleep(10);
 		}
 		Stop(pipeline1);

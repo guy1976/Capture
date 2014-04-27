@@ -76,10 +76,10 @@ void AddProcessor(CCaptureEnginePtr pipeLine, CCaptureEngineSamplesProcessor* pP
 	((CCapturePipeline*)pipeLine)->AddProcessor(pProcessor);
 }
 
-void ShowPreviewWindow(CaptureDevice*  device)
+void ShowPreviewWindow(CaptureDevicePtr  device)
 {
-//	auto pipeline = ((CCapturePipeline*)pipeLine);
-//	((device*)pipeLine)->ShowPreview();
+	auto pCapture = ((CCapture*)device);
+	pCapture->ShowPreviewWindow();
 }
 
 void EnumDevices(CaptureDevice devices[32])

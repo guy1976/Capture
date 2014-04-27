@@ -4,7 +4,7 @@
 
 
 
-CCapture::CCapture()
+CCapture::CCapture() : m_sdlWindow(NULL), m_sdlRenderer(NULL), m_sdlTexture(NULL), m_bPreview(false)
 {
 }
 
@@ -19,11 +19,15 @@ void CCapture::CaptureThread()
 	while (!m_bDone)
 	{
 		CSample* pSample = Capture();
+		if (m_bPreview)
+		{
+			RenderSample(pSample);
+		}
 		{
 			std::lock_guard<std::mutex> lock(m_samplesMutex);
 			if (m_samples.size() < 5)
 			{
-				m_samples.push_back(pSample);
+				m_samples.push_back(std::shared_ptr<CSample>(pSample));
 				cond_var.notify_one();
 			}
 			else
@@ -48,7 +52,7 @@ void CCapture::Stop()
 };
 
 
-CSample * CCapture::GetSample()
+std::shared_ptr<CSample>  CCapture::GetSample()
 {
 	std::unique_lock<std::mutex> lock(m_samplesMutex);	
 
@@ -61,6 +65,65 @@ CSample * CCapture::GetSample()
 	}
 	return NULL;
 }
+
+
+void CCapture::ShowPreviewWindow()
+{
+	if (m_sdlWindow == NULL)
+	{
+		SDL_Init(SDL_INIT_EVERYTHING);
+
+		SDL_CreateWindowAndRenderer(640, 480, SDL_WINDOW_BORDERLESS, &m_sdlWindow, &m_sdlRenderer);
+		SDL_RendererInfo info;
+		SDL_GetRendererInfo(m_sdlRenderer, &info);
+
+	}
+	m_bPreview = true;
+	SDL_Event e;
+	while (SDL_PollEvent(&e))
+	{
+	}
+}
+
+void CCapture::RenderSample(CSample *pVideoSample)
+{
+	if (m_sdlTexture == NULL)
+	{
+		int pixFormat = pVideoSample->get()->format;
+		Uint32 sdlFormat = SDL_PIXELFORMAT_RGB888;
+
+		if (PIX_FMT_RGB24 == pixFormat)
+		{
+			sdlFormat = SDL_PIXELFORMAT_RGB888;
+		}
+		if (PIX_FMT_BGR24 == pixFormat)
+		{
+			sdlFormat = SDL_PIXELFORMAT_BGR24;
+		}
+		if (PIX_FMT_RGB32 == pixFormat)
+		{
+			sdlFormat = SDL_PIXELFORMAT_ARGB8888;
+		}
+		if (PIX_FMT_YUYV422 == pixFormat)
+		{
+			sdlFormat = SDL_PIXELFORMAT_YV12;
+		}
+		m_sdlTexture = SDL_CreateTexture(m_sdlRenderer,
+			sdlFormat,
+			SDL_TEXTUREACCESS_STATIC,
+			pVideoSample->get()->width, pVideoSample->get()->height);
+	}
+	auto t0 = clock();
+
+	SDL_UpdateTexture(m_sdlTexture, NULL, pVideoSample->get()->data[0], pVideoSample->get()->linesize[0]);
+	SDL_RenderClear(m_sdlRenderer);
+	SDL_RenderCopy(m_sdlRenderer, m_sdlTexture, NULL, NULL);
+	SDL_RenderPresent(m_sdlRenderer);
+
+	auto t1 = clock();
+	printf("Time to render frame (%d)\n", t1 - t0);
+}
+
 
 int CFFCapture::TotalStreams()
 {

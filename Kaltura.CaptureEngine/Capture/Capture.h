@@ -10,24 +10,30 @@
 class CCapture
 {
 	std::unique_ptr<std::thread> m_captureThread;
-	std::deque<CSample*> m_samples;
+	std::deque<std::shared_ptr<CSample>> m_samples;
 	std::mutex m_samplesMutex;
 	std::condition_variable cond_var;
 
-	
+	SDL_Window*  m_sdlWindow;
+	SDL_Renderer* m_sdlRenderer;
+	SDL_Texture * m_sdlTexture;
+
+	void RenderSample(CSample *pVideoSample);
 	void CaptureThread();
 	bool m_bDone;
+	bool m_bPreview;
 protected:
 	virtual CSample* Capture()=0;
 
 public:
+	void ShowPreviewWindow();
 	virtual int TotalStreams() = 0;
 	virtual AVCodecContext* GetAVCodecContext(int index) = 0;
 	CCapture();
 	virtual ~CCapture();
 	void Start();
 	void Stop();
-	CSample * GetSample();
+	std::shared_ptr<CSample> GetSample();
 };
 
 
