@@ -31,19 +31,25 @@ int _tmain(int argc, _TCHAR* argv[])
 
 
 		SetOutputFile(pipeline1, "c:\\screen.mp4");
-		AddScreenSource(pipeline1, hWnd);
+
+		auto screenCapture = CreateDesktopCapture(hWnd);
+		auto camDevice = CreateDevice(&devices[1]);
+		auto mic = CreateDevice(&devices[2]);
+
+		AddVideoSource(pipeline1, screenCapture);
 		//AddProcessor(pipeline1, sceneDetector);
 
 		
 		auto pipeline2 = CreatePipeline();
 		SetOutputFile(pipeline2, "c:\\cam.mp4");
-		AddSource(pipeline2, &devices[1]);
-		AddSource(pipeline2, &devices[2]);
-		SetPreview(pipeline2);
+		AddVideoSource(pipeline2, camDevice);
+		AddAudioSource(pipeline2, mic);
+		//SetPreview(pipeline2);
 		Start(pipeline1);
 		Start(pipeline2);
 		while (!_kbhit())
 		{
+			//BSetPreview(pipeline2);
 			Sleep(10);
 		}
 		Stop(pipeline1);

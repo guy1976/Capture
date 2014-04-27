@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Capture;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -43,7 +44,9 @@ namespace Kaltura.CaptureEngine
         [DllImport(@"Kaltura.CaptureEngine.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern void Stop(IntPtr pipeLine);
         [DllImport(@"Kaltura.CaptureEngine.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void GetPreview(out int width,out int stride,out int height,out IntPtr data);
+        private static extern IntPtr ShowPreviewWindow(ref CaptureDevice device);
+        [DllImport(@"Kaltura.CaptureEngine.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void HidePreviewWindow(IntPtr t);
         private IntPtr m_pipeLine;
 
         public static List<CaptureDevice> GetDevices()
@@ -97,6 +100,11 @@ namespace Kaltura.CaptureEngine
         public void SetOutputFile(string outputFileName)
         {
             SetOutputFile(m_pipeLine, outputFileName);
+        }
+        public PreviewWindow PreviewSource(CaptureDevice device)
+        {
+            
+            return new PreviewWindow();
         }
     }
 }

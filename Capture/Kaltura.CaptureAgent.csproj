@@ -54,6 +54,7 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -67,6 +68,7 @@
     <Compile Include="CaptureTypeControl.xaml.cs">
       <DependentUpon>CaptureTypeControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="PreviewWindow.cs" />
     <Compile Include="Section.cs" />
     <Compile Include="ViewModel.cs" />
     <Page Include="CaptureProgressControl.xaml">

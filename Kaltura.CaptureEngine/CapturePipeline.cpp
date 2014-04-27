@@ -3,7 +3,7 @@
 
 #pragma comment(lib,"SDL2.lib")
 
-CCapturePipeline::CCapturePipeline() : m_sdlWindow(NULL), m_sdlRenderer(NULL), m_sdlTexture(NULL)
+CCapturePipeline::CCapturePipeline() : m_sdlWindow(NULL), m_sdlRenderer(NULL), m_sdlTexture(NULL), m_pAudioCapture(NULL), m_pVideoCapture(NULL)
 {
 }
 
@@ -12,40 +12,21 @@ CCapturePipeline::~CCapturePipeline()
 {
 }
 
-void CCapturePipeline::AddCameraSource(const std::string& videoInput)
+void CCapturePipeline::AddVideoSource(CCapture* pCapture)
 {
-	m_videoCapture = std::make_unique<CVideoCapture>();
-	auto pCapture = ((CVideoCapture*)m_videoCapture.get());
-	pCapture->Init(videoInput.c_str());
-	auto context = m_videoCapture->GetAVCodecContext(0);
-	AddVideo(context);
+	m_pVideoCapture = pCapture;
+	auto context = pCapture->GetAVCodecContext(0);
+	m_videoEncoder = std::make_unique<CVideoEncoder>(m_fileWriter);
+	m_videoEncoder->AddVideoStream(context->width, context->height, context->pix_fmt, 1000);
 }
 
-void CCapturePipeline::AddAudioSource(const std::string& input)
+void CCapturePipeline::AddAudioSource(CCapture* pCapture)
 {
-	m_audioCapture = std::make_unique<CAudioCapture>();
-	auto pCapture = ((CAudioCapture*)m_audioCapture.get());
-	pCapture->Init(input.c_str());
+	m_pAudioCapture = pCapture;
 	m_audioEncoder = std::make_unique<CAudioEncoder>(m_fileWriter);
 	m_audioEncoder->AddAudioStream(64);
 }
 
-
-void CCapturePipeline::AddScreenSource(HWND hScreen)
-{
-	m_videoCapture = std::make_unique<CScreenCapture>();
-	RECT ClientRect;
-	GetClientRect(hScreen, &ClientRect);
-	((CScreenCapture*)m_videoCapture.get())->Init(hScreen, ClientRect);
-	auto context = m_videoCapture->GetAVCodecContext(0);
-	AddVideo(context);
-}
-
-void CCapturePipeline::AddVideo(AVCodecContext* context)
-{
-	m_videoEncoder = std::make_unique<CVideoEncoder>(m_fileWriter);
-	m_videoEncoder->AddVideoStream(context->width, context->height, context->pix_fmt, 1000);
-}
 
 void CCapturePipeline::SetOutputFile(const std::string& fileName)
 {
@@ -61,12 +42,12 @@ void CCapturePipeline::Start()
 	}
 	m_bDone = false;
 	m_encoderThread = std::make_unique<std::thread>(&CCapturePipeline::EncoderThread, this);
-	if (m_videoCapture)
-		m_videoCapture->Start();
+	if (m_pVideoCapture!=NULL)
+		m_pVideoCapture->Start();
 
 
-	if (m_audioCapture)
-		m_audioCapture->Start(); 
+	if (m_pAudioCapture!=NULL)
+		m_pAudioCapture->Start();
 
 
 	
@@ -80,16 +61,19 @@ void CCapturePipeline::ShowPreview()
 	{
 		SDL_Init(SDL_INIT_EVERYTHING);
 
-		m_sdlWindow = SDL_CreateWindow("SDL", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 640, 480, SDL_WINDOW_BORDERLESS);
-		m_sdlRenderer = SDL_CreateRenderer(m_sdlWindow, -1, 0);
+		SDL_CreateWindowAndRenderer(640, 480, SDL_WINDOW_BORDERLESS, &m_sdlWindow, &m_sdlRenderer);
 		SDL_RendererInfo info;
 		SDL_GetRendererInfo(m_sdlRenderer, &info); 
 
 	}
+	SDL_Event e;
+	while (SDL_PollEvent(&e))
+	{
+	}
 	m_bPreview = true;
 }
 
-void CCapturePipeline::ClosePreview()
+void CCapturePipeline::HidePreview()
 {
 }
 void CCapturePipeline::EncoderThread()
@@ -98,7 +82,7 @@ void CCapturePipeline::EncoderThread()
 	while (!m_bDone)
 	{
 		std::this_thread::sleep_for(std::chrono::microseconds(1));
-		CSample* pVideoSample = m_videoCapture ? m_videoCapture->GetSample() : NULL;
+		CSample* pVideoSample = m_pVideoCapture != NULL ? m_pVideoCapture->GetSample() : NULL;
 
 		if (pVideoSample != NULL)
 		{
@@ -146,10 +130,6 @@ void CCapturePipeline::EncoderThread()
 				SDL_RenderCopy(m_sdlRenderer, m_sdlTexture, NULL, NULL);
 				SDL_RenderPresent(m_sdlRenderer);
 				
-				SDL_Event e;
-				while (SDL_PollEvent(&e))
-				{
-				}
 				auto t1 = clock();
 				printf("Time to render frame (%d)\n", t1-t0);
 			}
@@ -158,7 +138,7 @@ void CCapturePipeline::EncoderThread()
 		//	printf("time to  encode video (%d)\n", t1 - t0);
 			delete pVideoSample;
 		}
-		CSample* pAudioSample = m_audioCapture ? m_audioCapture->GetSample() : NULL;
+		CSample* pAudioSample = m_pAudioCapture != NULL ? m_pAudioCapture->GetSample() : NULL;
 		if (pAudioSample != NULL)
 		{
 			auto t0 = clock();
@@ -174,11 +154,11 @@ void CCapturePipeline::EncoderThread()
 
 void CCapturePipeline::Stop()
 {
-	if (m_videoCapture)
-		m_videoCapture->Stop();
+	if (m_pVideoCapture)
+		m_pVideoCapture->Stop();
 
-	if (m_audioCapture)
-		m_audioCapture->Stop();
+	if (m_pAudioCapture)
+		m_pAudioCapture->Stop();
 
 	m_bDone = true;
 	m_encoderThread->join();

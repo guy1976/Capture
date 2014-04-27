@@ -19,23 +19,43 @@ CCaptureEnginePtr CreatePipeline()
 	return new CCapturePipeline();
 }
 
-void AddSource(CCaptureEnginePtr pipeLine, CaptureDevice*  device)
+CaptureDevicePtr CreateDevice(CaptureDevice*  device)
 {
-	auto pipeline = ((CCapturePipeline*)pipeLine);
 	if (device->DeviceType == CaptureDeviceType::Video)
-		pipeline->AddCameraSource(ws2s(device->FFMpegInput));
+	{
+		auto videoCapture = new CVideoCapture();
+		videoCapture->Init(ws2s(device->FFMpegInput));
+		return (CaptureDevicePtr)videoCapture;
+	}
 	if (device->DeviceType == CaptureDeviceType::Audio)
-		pipeline->AddAudioSource(ws2s(device->FFMpegInput));
+	{
+		auto audCapture = new CAudioCapture();
+		audCapture->Init(ws2s(device->FFMpegInput));
+		return (CaptureDevicePtr)audCapture;
+	}
+	return NULL;
+}
+CaptureDevicePtr CreateDesktopCapture(void * handle)
+{
+	auto screenCapture= new CScreenCapture();
+	RECT ClientRect;
+	GetClientRect((HWND)handle, &ClientRect);
+	screenCapture->Init((HWND)handle, ClientRect);
+	return screenCapture;
 }
 
-void AddCameraSource(CCaptureEnginePtr pipeLine, char * inputName)
+void AddVideoSource(CCaptureEnginePtr pipeLine, CaptureDevicePtr  pDevice)
 {
-	((CCapturePipeline*)pipeLine)->AddCameraSource(inputName);
+	auto pipeline = ((CCapturePipeline*)pipeLine);
+	pipeline->AddVideoSource((CCapture*)pDevice);
 }
-void AddScreenSource(CCaptureEnginePtr pipeLine, void * handle)
+void AddAudioSource(CCaptureEnginePtr pipeLine, CaptureDevicePtr  pDevice)
 {
-	((CCapturePipeline*)pipeLine)->AddScreenSource((HWND)handle);
+	auto pipeline = ((CCapturePipeline*)pipeLine);
+	pipeline->AddAudioSource((CCapture*)pDevice);
 }
+
+
 void SetOutputFile(CCaptureEnginePtr pipeLine, char * fileName)
 {
 	((CCapturePipeline*)pipeLine)->SetOutputFile(fileName);
@@ -56,10 +76,10 @@ void AddProcessor(CCaptureEnginePtr pipeLine, CCaptureEngineSamplesProcessor* pP
 	((CCapturePipeline*)pipeLine)->AddProcessor(pProcessor);
 }
 
-void SetPreview(CCaptureEnginePtr pipeLine )
+void ShowPreviewWindow(CaptureDevice*  device)
 {
-	auto pipeline = ((CCapturePipeline*)pipeLine);
-	((CCapturePipeline*)pipeLine)->ShowPreview();
+//	auto pipeline = ((CCapturePipeline*)pipeLine);
+//	((device*)pipeLine)->ShowPreview();
 }
 
 void EnumDevices(CaptureDevice devices[32])

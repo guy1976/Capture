@@ -21,8 +21,9 @@ class CCapturePipeline
 	std::shared_ptr<CFileWriter>  m_fileWriter;
 	std::unique_ptr<CVideoEncoder> m_videoEncoder;
 	std::unique_ptr<CAudioEncoder> m_audioEncoder;
-	std::unique_ptr<CCapture> m_videoCapture;
-	std::unique_ptr<CCapture> m_audioCapture;
+
+	CCapture* m_pVideoCapture;
+	CCapture* m_pAudioCapture;
 	std::unique_ptr<std::thread> m_encoderThread;
 	std::unique_ptr<std::thread> m_processorThread;
 
@@ -30,14 +31,12 @@ class CCapturePipeline
 	bool m_bDone,m_bPreview;
 	void EncoderThread();
 	void AddVideo(AVCodecContext* context);
-	void ClosePreview();
+	void HidePreview();
 public:
 	CCapturePipeline();
 	virtual ~CCapturePipeline();
-	void AddCameraSource(const std::string& input);
-	void AddAudioSource(const std::string& input);
-
-	void AddScreenSource(HWND hScreen);
+	void AddVideoSource(CCapture* pSource);
+	void AddAudioSource(CCapture* pSource);
 	void SetOutputFile(const std::string& fileName);
 	void AddProcessor(CCaptureEngineSamplesProcessor* pProcessor) { m_processors.push_back(pProcessor); }
 	void ShowPreview();
