@@ -18,6 +18,12 @@ CCaptureEnginePtr CreatePipeline()
 {
 	return new CCapturePipeline();
 }
+void DestroyPipeline(CCaptureEnginePtr pipeLine)
+{
+	auto pipeline = ((CCapturePipeline*)pipeLine);
+	delete pipeline;
+}
+
 
 CaptureDevicePtr CreateDevice(CaptureDeviceInfo*  device)
 {
@@ -44,12 +50,23 @@ CaptureDevicePtr CreateDesktopCapture(void * handle)
 	return screenCapture;
 }
 
-void StartDevice(CaptureDevicePtr CaptureDeviceInfo)
+void DestroyDevice(CaptureDevicePtr device)
 {
+	auto pCapture = ((CCapture*)device);
+	delete pCapture;
+}
 
-	auto pCapture = ((CCapture*)CaptureDeviceInfo);
+void StartDevice(CaptureDevicePtr device)
+{
+	auto pCapture = ((CCapture*)device);
 	pCapture->Start();
 }
+void StopDevice(CaptureDevicePtr device)
+{
+	auto pCapture = ((CCapture*)device);
+	pCapture->Stop();
+}
+
 void AddVideoSource(CCaptureEnginePtr pipeLine, CaptureDevicePtr  pDevice)
 {
 	auto pipeline = ((CCapturePipeline*)pipeLine);
@@ -66,15 +83,15 @@ void SetOutputFile(CCaptureEnginePtr pipeLine, char * fileName)
 {
 	((CCapturePipeline*)pipeLine)->SetOutputFile(fileName);
 }
-void Start(CCaptureEnginePtr pipeLine)
+void Init(CCaptureEnginePtr pipeLine)
 {
-	((CCapturePipeline*)pipeLine)->Start();
+	((CCapturePipeline*)pipeLine)->Init();
 }
 
-void Stop(CCaptureEnginePtr pipeLine)
+void Close(CCaptureEnginePtr pipeLine)
 {
 
-	((CCapturePipeline*)pipeLine)->Stop();
+	((CCapturePipeline*)pipeLine)->Close();
 }
 void AddProcessor(CCaptureEnginePtr pipeLine, CCaptureEngineSamplesProcessor* pProcessor)
 {

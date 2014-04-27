@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Shapes;
 using System.Windows.Threading;
 
 namespace Capture
@@ -26,13 +28,31 @@ namespace Capture
             PauseRecorderingCommand = new ExtendedCommand(PauseRecord, false);
             ResumeRecordingCommand = new ExtendedCommand(ResumeRecord, false);
 
+
+            StartRecorderingCommand.Visual = new Ellipse() { HorizontalAlignment = HorizontalAlignment.Center, Width = 20, Height = 20, Fill = Brushes.Purple };
+            ResumeRecordingCommand.Visual = StartRecorderingCommand.Visual;
+            PauseRecorderingCommand.Visual = new Rectangle { HorizontalAlignment = HorizontalAlignment.Center, Width = 10, Height = 20, Fill = Brushes.Purple };
             IsCapturingScreen = true;
+            PauseResumeRecordingCommand = PauseRecorderingCommand;
         }
         public ExtendedCommand StartRecorderingCommand { get; set; }
         public ExtendedCommand StopRecordingCommand { get; set; }
         public ExtendedCommand PauseRecorderingCommand { get; set; }
         public ExtendedCommand ResumeRecordingCommand { get; set; }
 
+
+
+        public ExtendedCommand PauseResumeRecordingCommand
+        {
+            get { return (ExtendedCommand)GetValue(PauseResumeRecordingCommandProperty); }
+            set { SetValue(PauseResumeRecordingCommandProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for PauseResumeRecordingCommand.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty PauseResumeRecordingCommandProperty =
+            DependencyProperty.Register("PauseResumeRecordingCommand", typeof(ExtendedCommand), typeof(ViewModel), new PropertyMetadata(null));
+
+        
         public void StartRecord()
         {
 
@@ -53,6 +73,7 @@ namespace Capture
             m_captureLogic.CameraCaptureFileName = @"c:\camera.mp4";
             m_captureLogic.Start();
 
+            IsRecording = true;
 
             ResumeRecord();
         }
@@ -60,30 +81,36 @@ namespace Capture
         private void CalcCommandStates()
         {
 
-            StartRecorderingCommand.CanExecuteCommand = (m_captureLogic==null);
-            StopRecordingCommand.CanExecuteCommand = (m_captureLogic!=null);
-            PauseRecorderingCommand.CanExecuteCommand = !IsRecording;
-            ResumeRecordingCommand.CanExecuteCommand = IsRecording;
+            StartRecorderingCommand.CanExecuteCommand = !IsRecording;
+            StopRecordingCommand.CanExecuteCommand = IsRecording;
+            PauseRecorderingCommand.CanExecuteCommand = !IsPaused;
+            ResumeRecordingCommand.CanExecuteCommand = IsPaused;
+            if (IsPaused)
+                PauseResumeRecordingCommand = ResumeRecordingCommand;
+            else
+                PauseResumeRecordingCommand = PauseRecorderingCommand;
         }
 
         public void PauseRecord()
         {
-            CalcCommandStates();
 
-            m_captureLogic.Stop();
-            IsRecording = false;
+            m_captureLogic.Pause();
+            IsPaused = true;
             m_timer.Stop();
             m_timer = null;
+            CalcCommandStates();
         }
 
         public void ResumeRecord()
         {
-            CalcCommandStates();
-            IsRecording = true;
+            IsPaused = false;
             m_timer = new DispatcherTimer();
             m_timer.Interval = TimeSpan.FromSeconds(1);
             m_timer.Tick += m_timer_Tick;
             m_timer.Start();
+
+            m_captureLogic.Resume();
+            CalcCommandStates();
         }
 
         void m_timer_Tick(object sender, EventArgs e)
@@ -93,6 +120,9 @@ namespace Capture
         public void StopRecord()
         {
             PauseRecord();
+
+            IsRecording = false;
+
 
             m_captureLogic.Stop();
 
@@ -139,6 +169,19 @@ namespace Capture
         // Using a DependencyProperty as the backing store for IsCapturingMic.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty IsCapturingMicProperty =
             DependencyProperty.Register("IsCapturingMic", typeof(bool), typeof(ViewModel), new PropertyMetadata(true));
+
+
+
+
+        public bool IsPaused
+        {
+            get { return (bool)GetValue(IsPausedProperty); }
+            set { SetValue(IsPausedProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for IsPaused.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IsPausedProperty =
+            DependencyProperty.Register("IsPaused", typeof(bool), typeof(ViewModel), new PropertyMetadata(false));
 
         
         
@@ -207,6 +250,7 @@ namespace Capture
         private Action m_executer;
         private bool m_canExecute;
         private string m_commandName = String.Empty;
+        private Visual m_visual;
 
         public ExtendedCommand(Action executer, bool canExecute)
         {
@@ -252,6 +296,22 @@ namespace Capture
                 }
             }
         }
+        public Visual Visual
+        {
+            get
+            {
+                return m_visual;
+            }
+            set
+            {
+                if (m_visual != value)
+                {
+                    m_visual = value;
+                    NotifyPropertyChanged("Visual");
+                }
+            }
+        }
+
 
         public string CommandName
         {

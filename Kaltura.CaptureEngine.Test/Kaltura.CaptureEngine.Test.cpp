@@ -45,8 +45,8 @@ int _tmain(int argc, _TCHAR* argv[])
 		AddVideoSource(pipeline2, camDevice);
 		AddAudioSource(pipeline2, mic);
 		//SetPreview(pipeline2);
-		Start(pipeline1);
-		Start(pipeline2);
+		Init(pipeline1);
+		Init(pipeline2);
 
 		StartDevice(screenCapture);
 		StartDevice(camDevice);
@@ -56,8 +56,8 @@ int _tmain(int argc, _TCHAR* argv[])
 			//ShowPreviewWindow(camDevice);
 			Sleep(10);
 		}
-		Stop(pipeline1);
-		Stop(pipeline2);
+		Close(pipeline1);
+		Close(pipeline2);
 
 	}
 	return 0;

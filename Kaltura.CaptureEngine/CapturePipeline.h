@@ -35,6 +35,6 @@ public:
 	void AddAudioSource(CCapture* pSource);
 	void SetOutputFile(const std::string& fileName);
 	void AddProcessor(CCaptureEngineSamplesProcessor* pProcessor) { m_processors.push_back(pProcessor); }
-	void Start();
-	void Stop();
+	void Init();
+	void Close();
 };

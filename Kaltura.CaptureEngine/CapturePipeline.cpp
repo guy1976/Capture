@@ -34,7 +34,7 @@ void CCapturePipeline::SetOutputFile(const std::string& fileName)
 	m_fileWriter->InitFile(fileName.c_str());
 }
 
-void CCapturePipeline::Start()
+void CCapturePipeline::Init()
 {
 	if (m_encoderThread)
 	{
@@ -42,11 +42,6 @@ void CCapturePipeline::Start()
 	}
 	m_bDone = false;
 	m_encoderThread = std::make_unique<std::thread>(&CCapturePipeline::EncoderThread, this);
-
-
-	
-
-
 }
 
 void CCapturePipeline::EncoderThread()
@@ -88,7 +83,7 @@ void CCapturePipeline::EncoderThread()
 	m_fileWriter->Close();
 }
 
-void CCapturePipeline::Stop()
+void CCapturePipeline::Close()
 {
 	m_bDone = true;
 	m_encoderThread->join();

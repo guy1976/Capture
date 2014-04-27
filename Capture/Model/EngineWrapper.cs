@@ -28,7 +28,7 @@ namespace Kaltura.CaptureEngine
 	    public string FFMpegDevice;
     };
 
-    internal class Device
+    internal class Device : IDisposable 
     {
         public IntPtr Handle {get; set;}
 
@@ -37,6 +37,19 @@ namespace Kaltura.CaptureEngine
         
         [DllImport(@"Kaltura.CaptureEngine.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr CreateDesktopCapture(IntPtr handle);
+
+        [DllImport(@"Kaltura.CaptureEngine.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void DestroyDevice(IntPtr device);
+
+        
+        [DllImport(@"Kaltura.CaptureEngine.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern IntPtr StartDevice( IntPtr handle);
+        
+        [DllImport(@"Kaltura.CaptureEngine.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern IntPtr StopDevice( IntPtr handle);
+
+
+
 
         [DllImport(@"Kaltura.CaptureEngine.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr ShowPreviewWindow( IntPtr handle);
@@ -56,9 +69,39 @@ namespace Kaltura.CaptureEngine
             return dev;
         }
 
+
+        ~Device()
+        {
+
+            Dispose(false);
+        }
+
+        public void Start()
+        {
+            StartDevice(Handle);
+        }
+        public void Stop()
+        {
+            StopDevice(Handle);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
         internal void ShowPreview()
         {
             ShowPreviewWindow(Handle);
+        }
+
+        void Dispose(bool bDisposing)
+        {
+            if (Handle != IntPtr.Zero)
+            {
+                DestroyDevice(Handle);
+                Handle = IntPtr.Zero;
+            }
         }
     }
     internal  class CaptureEngine
@@ -68,6 +111,8 @@ namespace Kaltura.CaptureEngine
 
         [DllImport(@"Kaltura.CaptureEngine.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr CreatePipeline();
+        [DllImport(@"Kaltura.CaptureEngine.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void DestroyPipeline(IntPtr pipeLine);
 
         [DllImport(@"Kaltura.CaptureEngine.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern void AddVideoSource(IntPtr pipeLine,IntPtr device);
@@ -78,9 +123,11 @@ namespace Kaltura.CaptureEngine
         private static extern void SetOutputFile(IntPtr pipeLine,[MarshalAs(UnmanagedType.LPStr)] string fileName);
         
         [DllImport(@"Kaltura.CaptureEngine.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void Start(IntPtr pipeLine);
+        private static extern void Init(IntPtr pipeLine);
         [DllImport(@"Kaltura.CaptureEngine.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void Stop(IntPtr pipeLine);
+        private static extern void Close(IntPtr pipeLine);
+
+
         private IntPtr m_pipeLine;
 
         public static List<CaptureDeviceInfo> GetDevices()
@@ -119,13 +166,18 @@ namespace Kaltura.CaptureEngine
             m_pipeLine = CreatePipeline();
         }
 
-        public void Start()
+        public void Init()
         {
-            Start(m_pipeLine);
+            Init(m_pipeLine);
         }
-        public void Stop()
+        public void Close()
         {
-            Stop(m_pipeLine);
+            if (m_pipeLine != IntPtr.Zero)
+            {
+                Close(m_pipeLine);
+                DestroyPipeline(m_pipeLine);
+                m_pipeLine = IntPtr.Zero;
+            }
         }
         public void AddVideoSource(Device dev)
         {
@@ -147,6 +199,7 @@ namespace Kaltura.CaptureEngine
 
         internal void Dispose()
         {
+            Close();
         }
     }
 }

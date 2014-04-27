@@ -43,8 +43,7 @@ protected:
 	std::unique_ptr<AVInputFormat, std::function<void(AVInputFormat *)>> m_inputDevice;
 	std::unique_ptr<AVFormatContext, std::function<void(AVFormatContext *)>> m_avFormatContext;
 	AVFrame* ReadPacket();
-protected:
-	void InitDevcie();	
+protected:	
 public:
 	int TotalStreams();
 	AVCodecContext* GetAVCodecContext(int index);

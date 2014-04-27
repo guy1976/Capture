@@ -61,25 +61,25 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="CaptureDevices.xaml.cs">
+    <Compile Include="Views\CaptureDevices.xaml.cs">
       <DependentUpon>CaptureDevices.xaml</DependentUpon>
     </Compile>
-    <Compile Include="CaptureLogic.cs" />
-    <Compile Include="CaptureProgressControl.xaml.cs">
+    <Compile Include="Model\CaptureLogic.cs" />
+    <Compile Include="Views\CaptureProgressControl.xaml.cs">
       <DependentUpon>CaptureProgressControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="EngineWrapper.cs" />
-    <Compile Include="CaptureTypeControl.xaml.cs">
+    <Compile Include="Model\EngineWrapper.cs" />
+    <Compile Include="Views\CaptureTypeControl.xaml.cs">
       <DependentUpon>CaptureTypeControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="PreviewWindow.cs" />
     <Compile Include="Section.cs" />
-    <Compile Include="ViewModel.cs" />
-    <Page Include="CaptureDevices.xaml">
+    <Compile Include="ViewModel\ViewModel.cs" />
+    <Page Include="Views\CaptureDevices.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="CaptureProgressControl.xaml">
+    <Page Include="Views\CaptureProgressControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -103,7 +103,7 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="CaptureTypeControl.xaml">
+    <Page Include="Views\CaptureTypeControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -159,6 +159,7 @@
   <ItemGroup>
     <Content Include="Images\Desktop.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

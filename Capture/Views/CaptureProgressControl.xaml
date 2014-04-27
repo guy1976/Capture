@@ -12,10 +12,12 @@
         </Grid.RowDefinitions>
         <TextBlock Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" Height="64" FontSize="45"><Run Text="{Binding RecordingTime,StringFormat=hh\\:mm\\:ss}"/></TextBlock>
        <StackPanel Grid.Row="1" Orientation="Horizontal"  HorizontalAlignment="Center">
-            <Button Style="{DynamicResource MetroCircleButtonStyle}" VerticalAlignment="Center" Height="64"  Width="64">
-               <Grid>
-                    <Ellipse Width="30" Height="30" Fill="Red"/>
-                </Grid>
+            <Button Style="{DynamicResource MetroCircleButtonStyle}" 
+                    VerticalAlignment="Center" Height="64"  Width="64" 
+                    
+                    Content="{Binding PauseResumeRecordingCommand.Visual}"
+                    Command="{Binding PauseResumeRecordingCommand}">            
+                
             </Button>
             <Button Style="{DynamicResource MetroCircleButtonStyle}"  VerticalAlignment="Center" Height="64" Width="64" Grid.Column="1" Command="{Binding StopRecordingCommand}">
                 <Rectangle Width="25" Height="25" Fill="Black"/>
