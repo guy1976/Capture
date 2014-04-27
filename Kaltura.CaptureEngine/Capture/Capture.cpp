@@ -16,6 +16,7 @@ CCapture::~CCapture()
 
 void CCapture::CaptureThread()
 {
+	ADDLOG(LogLevel::Info, L"CaptureThread started");
 	while (!m_bDone)
 	{
 		CSample* pSample = Capture();
@@ -38,17 +39,21 @@ void CCapture::CaptureThread()
 		}
 
 	}
+	ADDLOG(LogLevel::Info, L"CaptureThread finished");
 }
 void CCapture::Start()
 {
+	ADDLOG(LogLevel::Debug, L"Starting Capture thread");
 	m_bDone = false;
 	m_captureThread = std::make_unique<std::thread>(&CCapture::CaptureThread, this);
 }
 
 void CCapture::Stop()
 {
+	ADDLOG(LogLevel::Debug, L"Stopping Capture thread");
 	m_bDone = true;
 	m_captureThread->join();
+	ADDLOG(LogLevel::Debug, L"Capture thread stopped");
 };
 
 

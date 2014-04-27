@@ -74,6 +74,7 @@ namespace Capture
             m_captureLogic.Start();
 
             IsRecording = true;
+            IsPaused = true;
 
             ResumeRecord();
         }
@@ -93,24 +94,29 @@ namespace Capture
 
         public void PauseRecord()
         {
-
-            m_captureLogic.Pause();
-            IsPaused = true;
-            m_timer.Stop();
-            m_timer = null;
-            CalcCommandStates();
+            if (!IsPaused)
+            {
+                m_captureLogic.Pause();
+                IsPaused = true;
+                m_timer.Stop();
+                m_timer = null;
+                CalcCommandStates();
+            }
         }
 
         public void ResumeRecord()
         {
-            IsPaused = false;
-            m_timer = new DispatcherTimer();
-            m_timer.Interval = TimeSpan.FromSeconds(1);
-            m_timer.Tick += m_timer_Tick;
-            m_timer.Start();
+            if (IsPaused)
+            {
+                IsPaused = false;
+                m_timer = new DispatcherTimer();
+                m_timer.Interval = TimeSpan.FromSeconds(1);
+                m_timer.Tick += m_timer_Tick;
+                m_timer.Start();
 
-            m_captureLogic.Resume();
-            CalcCommandStates();
+                m_captureLogic.Resume();
+                CalcCommandStates();
+            }
         }
 
         void m_timer_Tick(object sender, EventArgs e)

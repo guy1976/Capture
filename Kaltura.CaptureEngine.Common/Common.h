@@ -7,6 +7,8 @@
 #pragma comment(lib,"..\\Debug\\Kaltura.CaptureEngine.Common.lib")
 #endif
 
+#include "Logger.h"
+
 typedef enum CaptureDeviceType
 {
 	None,
@@ -21,3 +23,6 @@ struct CaptureDeviceInfo
 	wchar_t FFMpegInput[100];
 	wchar_t FFMpegDevice[100];
 };
+
+
+void Log(LogLevel level);

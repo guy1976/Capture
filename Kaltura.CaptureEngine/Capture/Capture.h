@@ -1,6 +1,7 @@
 #pragma once
 
 #include "..\FFMpegWrappers\FFMpegCommon.h"
+#include "..\..\Kaltura.CaptureEngine.Common\Common.h"
 #include <stack>
 #include <mutex>
 #include <thread>

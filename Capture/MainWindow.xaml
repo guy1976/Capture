@@ -61,7 +61,7 @@
         <TabItem Header="Capture">
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="100"/>
+                    <RowDefinition Height="90"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <local:CaptureDevices Grid.Row="0" ></local:CaptureDevices>
