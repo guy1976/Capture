@@ -15,16 +15,18 @@ namespace Capture
     {
         static App()
         {
-            /*
+         /*   
             var devices = CaptureEngine.GetDevices();
-            devices = devices;
             try
             {
+                Device cam = Device.FromCaptureDevice(devices[1]);
+                Device mic = Device.FromCaptureDevice(devices[2]);
                 CaptureEngine cap = new CaptureEngine();
                 cap.SetOutputFile(@"c:\1.mp4");
-                cap.AddSource(devices[1]);
-                cap.AddSource(devices[2]);
+                cap.AddVideoSource(cam);
+                cap.AddAudioSource(mic);
                 cap.Start();
+                cam.ShowPreview();
                 System.Threading.Thread.Sleep(5000);
                 cap.Stop();
             }

@@ -61,6 +61,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="CaptureDevices.xaml.cs">
+      <DependentUpon>CaptureDevices.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CaptureLogic.cs" />
     <Compile Include="CaptureProgressControl.xaml.cs">
       <DependentUpon>CaptureProgressControl.xaml</DependentUpon>
     </Compile>
@@ -71,6 +75,10 @@
     <Compile Include="PreviewWindow.cs" />
     <Compile Include="Section.cs" />
     <Compile Include="ViewModel.cs" />
+    <Page Include="CaptureDevices.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="CaptureProgressControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

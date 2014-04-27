@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Kaltura.CaptureEngine;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
@@ -15,22 +16,70 @@ namespace Capture
     class ViewModel : DependencyObject
     {
         DispatcherTimer m_timer;
-        DateTime m_recordingStartTime;
+        CaptureLogic m_captureLogic;
+        List<CaptureDeviceInfo> m_deviceInfo = CaptureEngine.GetDevices();
 
         public ViewModel()
         {
             StartRecorderingCommand = new ExtendedCommand(StartRecord, true);
             StopRecordingCommand = new ExtendedCommand(StopRecord, false);
+            PauseRecorderingCommand = new ExtendedCommand(PauseRecord, false);
+            ResumeRecordingCommand = new ExtendedCommand(ResumeRecord, false);
+
+            IsCapturingScreen = true;
         }
         public ExtendedCommand StartRecorderingCommand { get; set; }
         public ExtendedCommand StopRecordingCommand { get; set; }
+        public ExtendedCommand PauseRecorderingCommand { get; set; }
+        public ExtendedCommand ResumeRecordingCommand { get; set; }
 
         public void StartRecord()
         {
-            StartRecorderingCommand.CanExecuteCommand = false;
-            StopRecordingCommand.CanExecuteCommand = true;
+
+            m_captureLogic = new CaptureLogic();
+            if (IsCapturingCamera)
+            {
+                m_captureLogic.Camera = Device.FromCaptureDevice(m_deviceInfo[1]);
+            }
+            if (IsCapturingMic)
+            {
+                m_captureLogic.Mic = Device.FromCaptureDevice(m_deviceInfo[2]);
+            }
+            if (IsCapturingScreen)
+            {
+              //  m_captureLogic.Screen=Device.FromDesktop(IntPtr.Zero)
+            }
+            m_captureLogic.ScreenCaptureFileName = @"c:\screen.mp4";
+            m_captureLogic.CameraCaptureFileName = @"c:\camera.mp4";
+            m_captureLogic.Start();
+
+
+            ResumeRecord();
+        }
+
+        private void CalcCommandStates()
+        {
+
+            StartRecorderingCommand.CanExecuteCommand = (m_captureLogic==null);
+            StopRecordingCommand.CanExecuteCommand = (m_captureLogic!=null);
+            PauseRecorderingCommand.CanExecuteCommand = !IsRecording;
+            ResumeRecordingCommand.CanExecuteCommand = IsRecording;
+        }
+
+        public void PauseRecord()
+        {
+            CalcCommandStates();
+
+            m_captureLogic.Stop();
+            IsRecording = false;
+            m_timer.Stop();
+            m_timer = null;
+        }
+
+        public void ResumeRecord()
+        {
+            CalcCommandStates();
             IsRecording = true;
-            m_recordingStartTime = DateTime.UtcNow;
             m_timer = new DispatcherTimer();
             m_timer.Interval = TimeSpan.FromSeconds(1);
             m_timer.Tick += m_timer_Tick;
@@ -39,18 +88,60 @@ namespace Capture
 
         void m_timer_Tick(object sender, EventArgs e)
         {
-            RecordingTime = DateTime.UtcNow - m_recordingStartTime;
+            RecordingTime = m_captureLogic.RecordingTime; 
         }
         public void StopRecord()
         {
-            StartRecorderingCommand.CanExecuteCommand = true;
-            StopRecordingCommand.CanExecuteCommand = false;
-            IsRecording = false;
-            m_timer.Stop();
-            m_timer = null;
+            PauseRecord();
+
+            m_captureLogic.Stop();
+
+            m_captureLogic.Dispose();
+
+            m_captureLogic = null;
+            CalcCommandStates();
         }
 
 
+
+        public bool IsCapturingScreen
+        {
+            get { return (bool)GetValue(IsCapturingScreenProperty); }
+            set { SetValue(IsCapturingScreenProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for IsCapturingScreen.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IsCapturingScreenProperty =
+            DependencyProperty.Register("IsCapturingScreen", typeof(bool), typeof(ViewModel), new PropertyMetadata(true));
+
+
+
+
+        public bool IsCapturingCamera
+        {
+            get { return (bool)GetValue(IsCapturingCameraProperty); }
+            set { SetValue(IsCapturingCameraProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for IsCapturingCamera.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IsCapturingCameraProperty =
+            DependencyProperty.Register("IsCapturingCamera", typeof(bool), typeof(ViewModel), new PropertyMetadata(true));
+
+
+
+
+        public bool IsCapturingMic
+        {
+            get { return (bool)GetValue(IsCapturingMicProperty); }
+            set { SetValue(IsCapturingMicProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for IsCapturingMic.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IsCapturingMicProperty =
+            DependencyProperty.Register("IsCapturingMic", typeof(bool), typeof(ViewModel), new PropertyMetadata(true));
+
+        
+        
 
         public bool IsRecording
         {

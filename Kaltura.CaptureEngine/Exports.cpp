@@ -19,7 +19,7 @@ CCaptureEnginePtr CreatePipeline()
 	return new CCapturePipeline();
 }
 
-CaptureDevicePtr CreateDevice(CaptureDevice*  device)
+CaptureDevicePtr CreateDevice(CaptureDeviceInfo*  device)
 {
 	if (device->DeviceType == CaptureDeviceType::Video)
 	{
@@ -44,6 +44,12 @@ CaptureDevicePtr CreateDesktopCapture(void * handle)
 	return screenCapture;
 }
 
+void StartDevice(CaptureDevicePtr CaptureDeviceInfo)
+{
+
+	auto pCapture = ((CCapture*)CaptureDeviceInfo);
+	pCapture->Start();
+}
 void AddVideoSource(CCaptureEnginePtr pipeLine, CaptureDevicePtr  pDevice)
 {
 	auto pipeline = ((CCapturePipeline*)pipeLine);
@@ -82,9 +88,9 @@ void ShowPreviewWindow(CaptureDevicePtr  device)
 	pCapture->ShowPreviewWindow();
 }
 
-void EnumDevices(CaptureDevice devices[32])
+void EnumDevices(CaptureDeviceInfo devices[32])
 {
-	memset(devices, 0, sizeof(CaptureDevice[32]));
+	memset(devices, 0, sizeof(CaptureDeviceInfo[32]));
 	CoInitialize(NULL);
 	std::vector<std::wstring> devicesName;
 	CEnumDevices a;
@@ -93,7 +99,7 @@ void EnumDevices(CaptureDevice devices[32])
 	int index = 0;
 	for each (auto vidDevice in devicesName)
 	{
-		CaptureDevice& device = devices[index++];
+		CaptureDeviceInfo& device = devices[index++];
 		device.DeviceType = CaptureDeviceType::Video;
 		wcsncpy(device.FFMpegDevice, L"dshow",100);
 		wcsncpy(device.FriendlyName, vidDevice.c_str(), 100);
@@ -107,7 +113,7 @@ void EnumDevices(CaptureDevice devices[32])
 
 	for each (auto vidDevice in devicesName)
 	{
-		CaptureDevice& device = devices[index++];
+		CaptureDeviceInfo& device = devices[index++];
 		device.DeviceType = CaptureDeviceType::Audio;
 		wcsncpy(device.FFMpegDevice, L"dshow",100);
 		wcsncpy(device.FriendlyName, vidDevice.c_str(), 100);

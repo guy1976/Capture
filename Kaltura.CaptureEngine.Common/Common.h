@@ -14,7 +14,7 @@ typedef enum CaptureDeviceType
 	Audio
 };
 
-struct CaptureDevice
+struct CaptureDeviceInfo
 {
 	CaptureDeviceType DeviceType;
 	wchar_t FriendlyName[100];

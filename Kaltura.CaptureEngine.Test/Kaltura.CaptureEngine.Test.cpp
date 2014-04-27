@@ -17,7 +17,7 @@ extern "C" __declspec(dllimport) CCaptureEngineSamplesProcessor* CreateSceneDete
 int _tmain(int argc, _TCHAR* argv[])
 {
 	
-	CaptureDevice devices[32];
+	CaptureDeviceInfo devices[32];
 	EnumDevices(devices);
 
 
@@ -47,9 +47,13 @@ int _tmain(int argc, _TCHAR* argv[])
 		//SetPreview(pipeline2);
 		Start(pipeline1);
 		Start(pipeline2);
+
+		StartDevice(screenCapture);
+		StartDevice(camDevice);
+		StartDevice(mic);
 		while (!_kbhit())
 		{
-			ShowPreviewWindow(camDevice);
+			//ShowPreviewWindow(camDevice);
 			Sleep(10);
 		}
 		Stop(pipeline1);

@@ -64,22 +64,7 @@
                     <RowDefinition Height="100"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center"   Margin="5">
-                    <ToggleButton  Width="64"  Height="64" Margin="0,0,5,0" ToolTip="Capture PowerPoint presentation"  ContextMenu="{StaticResource Options1}">
-                         <Rectangle Grid.Row="0" Width="32"  Height="32" Fill="Black">
-                                <Rectangle.OpacityMask>
-                                    <VisualBrush Visual="{StaticResource appbar_office_powerpoint}" Stretch="Fill" />
-                                </Rectangle.OpacityMask>
-                            </Rectangle>
-                    </ToggleButton>
-
-                    <ToggleButton  Width="64" Height="64"  Margin="0,0,5,0" ToolTip="Capture camera" >
-                        <Image Source="{DynamicResource CameraIcon}"  />
-                    </ToggleButton>
-                    <ToggleButton  Width="64" Height="64" ToolTip="Capture Microphone" >
-                        <Image Source="{DynamicResource MicrophoneIcon}" Width="32"  Height="32"   />
-                    </ToggleButton>
-                </StackPanel>
+                <local:CaptureDevices Grid.Row="0" ></local:CaptureDevices>
                 <Grid Grid.Row="1" >
                     <TabControl>
                         <TabItem IsSelected="{Binding IsRecording,Converter={StaticResource ReverseBool}}">

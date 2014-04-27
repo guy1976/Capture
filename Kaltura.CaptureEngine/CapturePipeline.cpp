@@ -42,12 +42,6 @@ void CCapturePipeline::Start()
 	}
 	m_bDone = false;
 	m_encoderThread = std::make_unique<std::thread>(&CCapturePipeline::EncoderThread, this);
-	if (m_pVideoCapture!=NULL)
-		m_pVideoCapture->Start();
-
-
-	if (m_pAudioCapture!=NULL)
-		m_pAudioCapture->Start();
 
 
 	
@@ -96,12 +90,6 @@ void CCapturePipeline::EncoderThread()
 
 void CCapturePipeline::Stop()
 {
-	if (m_pVideoCapture)
-		m_pVideoCapture->Stop();
-
-	if (m_pAudioCapture)
-		m_pAudioCapture->Stop();
-
 	m_bDone = true;
 	m_encoderThread->join();
 	m_encoderThread.release();
